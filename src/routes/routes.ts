@@ -2,6 +2,7 @@ import {Request, Response, Router } from 'express'
 import { Raza, SubRaza } from '../classes/razas/razaDefault'
 import { db } from '../database/database'
 import { iRaza, iSubraza, RazaDB } from '../model/raza'
+import { iHechizo, SpellDB } from '../model/spells'
 import { iUsers, UsersDB } from '../model/usuarios'
 
 let dSchemaRaza : iRaza = {
@@ -31,6 +32,13 @@ let dSchemaUser : iUsers = {
     _Tipo: null,
 }
 
+let dSchemaSpells : iHechizo = {
+    _id: null, // para acceder en la subclase
+    _Nombre: null,
+    _Tipo: null,
+    _Duracion: null,
+    _Descripcion: null,
+}
 
 class DatoRoutes {
     private _router: Router
@@ -88,17 +96,18 @@ class DatoRoutes {
     }
 
     private addRaza = async (req: Request, res: Response) => {
-        const {Id, _NombreRaza, _Multiplicadores, _Habilidades, _Origen, _Nombres} = req.body
+        const {Id, NombreRaza, Multiplicadores, Habilidades, Origen, Nombres} = req.body
         await db.conectarBD()
         .then( async (mensaje) => {
             dSchemaRaza = {
                 _id: Id,
-                _NombreRaza: _NombreRaza, 
-                _Multiplicadores: _Multiplicadores,
-                _Habilidades: _Habilidades,
-                _Origen: _Origen,
-                _Nombres: _Nombres,
+                _NombreRaza: NombreRaza, 
+                _Multiplicadores: Multiplicadores,
+                _Habilidades: Habilidades,
+                _Origen: Origen,
+                _Nombres: Nombres,
           }
+          console.log(req.body)
           const oSchema = new RazaDB(dSchemaRaza)
           await oSchema.save()
         }).catch((mensaje) => {
@@ -107,18 +116,18 @@ class DatoRoutes {
     }
 
     private addSubRaza = async (req: Request, res: Response) => {
-        const {Id, _NombreRaza, _Multiplicadores, _Habilidades, _Origen, _Nombres, _RazaDependiente, _OrigenSubRaza} = req.body
+        const {Id, NombreRaza, Multiplicadores, Habilidades, Origen, Nombres, RazaDependiente, OrigenSubRaza} = req.body
         await db.conectarBD()
         .then( async (mensaje) => {
             dSchemaSubRaza = {
                 _id: Id,
-                _NombreRaza: _NombreRaza, 
-                _Multiplicadores: _Multiplicadores,
-                _Habilidades: _Habilidades,
-                _Origen: _Origen,
-                _Nombres: _Nombres,
-                _RazaDependiente: _RazaDependiente,
-                _OrigenSubRaza: _OrigenSubRaza
+                _NombreRaza: NombreRaza, 
+                _Multiplicadores: Multiplicadores,
+                _Habilidades: Habilidades,
+                _Origen: Origen,
+                _Nombres: Nombres,
+                _RazaDependiente: RazaDependiente,
+                _OrigenSubRaza: OrigenSubRaza
           }
           const oSchema = new RazaDB(dSchemaSubRaza)
           await oSchema.save()
@@ -175,7 +184,65 @@ class DatoRoutes {
                 _Contraseña: Contraseña,
                 _Tipo: Tipo,
           }
-          const oSchema = new RazaDB(dSchemaRaza)
+          console.log(dSchemaUser)
+          const oSchema = new UsersDB(dSchemaUser)
+          await oSchema.save()
+        }).catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
+    private getSpells = async (req: Request, res: Response) => {
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const query  = await SpellDB.find({})
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
+    private searchSpells = async (req: Request, res: Response) => {
+        const valor = req.params.id
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const query  = await SpellDB.findOne({_id: valor})
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
+    private deleteSpells = async (req: Request, res: Response) => {
+        const valor = req.params.id
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const query  = await SpellDB.findOneAndDelete({_id: valor})
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
+    private addSpells = async (req: Request, res: Response) => {
+        const {Id, Nombre, Tipo, Duracion, Descripcion} = req.body
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            dSchemaSpells = {
+                _id: Id, // para acceder en la subclase
+                _Nombre: Nombre,
+                _Tipo: Tipo,
+                _Duracion: Duracion,
+                _Descripcion: Descripcion,
+          }
+          console.log(dSchemaSpells)
+          const oSchema = new SpellDB(dSchemaSpells)
           await oSchema.save()
         }).catch((mensaje) => {
             res.send(mensaje)
@@ -185,15 +252,20 @@ class DatoRoutes {
 
     misRutas(){
         this._router.get('/Razas/get', this.getRazas)
-        this._router.post('/Razas/ropa/add', this.addSubRaza)
-        this._router.post('/Razas/movil/add', this.addRaza)
+        this._router.post('/Razas/Sub/add', this.addSubRaza)
+        this._router.post('/Razas/add', this.addRaza)
         this._router.get('/Razas/search/:id', this.searchRaza)
         this._router.delete('/Razas/delete/:id', this.deleteRaza)
 
         this._router.get('/Users/get', this.getUsers)
         this._router.post('/Users/add', this.addUser)
-        this._router.post('/Users/delete', this.deleteUser)
+        this._router.delete('/Users/delete', this.deleteUser)
         this._router.get('/Users/search/:id', this.searchUser)
+
+        this._router.get('/Spells/get', this.getSpells)
+        this._router.post('/Spells/add', this.addSpells)
+        this._router.delete('/Spells/delete', this.deleteSpells)
+        this._router.get('/Spells/search/:id', this.searchSpells)
     }
 }
 const obj = new DatoRoutes()

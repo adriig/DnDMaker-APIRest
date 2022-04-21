@@ -9,42 +9,25 @@ const spellSchema = new Schema({
         type: String
     },
 
-    _CategoriaProducto: {
+    _Tipo: {
         type: String
     },
 
-    _PrecioBase: {
+    _Duracion: {
         type: Number
     },
 
-    _NotaMedia: {
-        type: Number
-    },
-
-    _Almacenamiento: {
-        type: Array
-    },
-    _Talla: {
-        type: Number
-    },
-    _GBRam: {
-        type: Number
-    },
-    _Megapixeles: {
-        type: Number
-    },
-    _GHz: {
-        type: Number
+    _Descripcion: {
+        type: String
     },
 })
 
-export type iProducto = {
+export type iHechizo = {
     _id: number | null, // para acceder en la subclase
-    _NombreProducto: string | null,
-    _CategoriaProducto: string | null,
-    _PrecioBase: number | null,
-    _NotaMedia: number | null,
-    _Almacenamiento: Array<any> | null,
+    _Nombre: string | null,
+    _Tipo: string | null,
+    _Duracion: number | null,
+    _Descripcion: string | null,
 }
 // La colección de la BD (Plural siempre)
-export const SpellDB = model('productos3', spellSchema)
+export const SpellDB = model('hechizos', spellSchema)

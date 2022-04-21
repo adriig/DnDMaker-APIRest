@@ -6,9 +6,9 @@ export class Hechizos {
     public _Nombre: string;
     public _Tipo: string;
     public _Duracion: number;
-    public _Descripcion: Array<String>;
+    public _Descripcion: string;
 
-    public constructor(id: number, Nombre: string, Tipo: string, Duracion: number, Descripcion: Array<String> ){
+    public constructor(id: number, Nombre: string, Tipo: string, Duracion: number, Descripcion: string ){
         this._id=id
         this._Nombre=Nombre;
         this._Tipo = Tipo;

@@ -2,7 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Personaje = void 0;
 class Personaje {
-    constructor(NombrePersonaje, Alineacion, Personalidad, Raza, Clase, Hechizos, Estadisticas, Habilidades) {
+    constructor(id, NombrePersonaje, Alineacion, Personalidad, Raza, Clase, Hechizos, Estadisticas, Habilidades) {
+        this._id = id;
         this._NombrePersonaje = NombrePersonaje;
         this._Alineacion = Alineacion;
         this._Personalidad = Personalidad;

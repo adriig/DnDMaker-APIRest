@@ -17,7 +17,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 class DataBase {
     constructor() {
         this._cadenaConexion2 = 'mongodb://localhost/test';
-        this._cadenaConexion = 'mongodb+srv://adri:adri@cluster0.f345a.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
+        this._cadenaConexion = 'mongodb+srv://agarcia:E0pIUE9FxV1jrSEybQ8e@dndmaker.z4szi.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
         this.conectarBD = () => __awaiter(this, void 0, void 0, function* () {
             const promise = new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
                 yield mongoose_1.default.connect(this._cadenaConexion, {})

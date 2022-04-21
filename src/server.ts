@@ -28,13 +28,12 @@ class Server {
             res.header('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
             next();
         });
-
     }
 
     private routes(){
         this.app.use('/', routes)
     }
-    start(){
+    start() {
         this.app.listen(this.app.get('port'), 
         () => {
             console.log(`Server on port: ${this.app.get('port')}`)
