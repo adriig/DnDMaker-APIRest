@@ -4,6 +4,9 @@ import { boolean } from "webidl-conversions";
 import { Habilidades } from "../classes/habilidadesBase";
 // Definimos el Schema
 const razasSchema = new Schema({
+    _id: {
+        type: Number
+    },
     _NombreRaza: {
         type: String // para acceder en la subclase
     },
@@ -28,6 +31,7 @@ const razasSchema = new Schema({
 })
 
 export type iRaza = {
+    _id: number | null,
     _NombreRaza: string | null, 
     _Multiplicadores: Array<Stats> | null,
     _Habilidades: Array<Habilidades> | null,
@@ -36,6 +40,7 @@ export type iRaza = {
 }
 
 export type iSubraza = {
+    _id: number | null,
     _NombreRaza: string | null, 
     _Multiplicadores: Array<Stats> | null,
     _Habilidades: Array<Habilidades> | null,
