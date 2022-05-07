@@ -260,7 +260,7 @@ class DatoRoutes {
         this._router.get('/Users/get', this.getUsers)
         this._router.post('/Users/add', this.addUser)
         this._router.delete('/Users/delete', this.deleteUser)
-        this._router.get('/Users/search/:id', this.searchUser)
+        this._router.get('/Users/search/:id', this.searchUser) 
 
         this._router.get('/Spells/get', this.getSpells)
         this._router.post('/Spells/add', this.addSpells)
