@@ -23,7 +23,7 @@ let dSchemaSubRaza : iSubraza = {
     _Nombres: null,
     _RazaDependiente: null,
     _OrigenSubRaza: null
-}
+} 
 
 let dSchemaUser : iUsers = {
     _id: null,
