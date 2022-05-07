@@ -15,4 +15,4 @@ export class Hechizos {
         this._Duracion = Duracion;
         this._Descripcion = Descripcion;
     }
-}
+} 
