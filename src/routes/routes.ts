@@ -268,6 +268,7 @@ class DatoRoutes {
         this._router.get('/Spells/search/:id', this.searchSpells)
     }
 } 
+// New
 const obj = new DatoRoutes()
 obj.misRutas()
 export const routes = obj.router
