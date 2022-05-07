@@ -267,7 +267,7 @@ class DatoRoutes {
         this._router.delete('/Spells/delete', this.deleteSpells)
         this._router.get('/Spells/search/:id', this.searchSpells)
     }
-}
+} 
 const obj = new DatoRoutes()
 obj.misRutas()
 export const routes = obj.router
