@@ -4,9 +4,9 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node ./build/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dist": "./dist"
+    "ts": "tsc -w",
+    "dev": "nodemon ./build/server.js",
+    "start": "node ./build/server.js"
   },
   "repository": {
     "type": "git",
@@ -31,6 +31,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.3",
     "mongoose": "^6.3.0",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "serve": "^13.0.2"
   }
 }
