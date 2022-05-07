@@ -266,7 +266,7 @@ class DatoRoutes {
         this._router.post('/Spells/add', this.addSpells)
         this._router.delete('/Spells/delete', this.deleteSpells)
         this._router.get('/Spells/search/:id', this.searchSpells)
-    }
+    } 
 } 
 const obj = new DatoRoutes()
 obj.misRutas()
