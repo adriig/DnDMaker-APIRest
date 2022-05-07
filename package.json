@@ -4,9 +4,10 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "ts":"tsc -w",
     "start": "node ./build/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dist": "./dist"
+    "dist": "./build"
   },
   "repository": {
     "type": "git",
