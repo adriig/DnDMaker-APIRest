@@ -8,16 +8,9 @@
     "dev": "nodemon ./build/server.js",
     "start": "node ./build/server.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/adriig/DnDMaker-APIRest.git"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/adriig/DnDMaker-APIRest/issues"
-  },
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.1",
