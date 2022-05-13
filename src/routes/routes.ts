@@ -4,6 +4,16 @@ import { db } from '../database/database'
 import { iRaza, iSubraza, RazaDB } from '../model/raza'
 import { iHechizo, SpellDB } from '../model/spells'
 import { iUsers, UsersDB } from '../model/usuarios'
+import { Personaje } from '../classes/personaje/personaje'
+import { iCharacter, CharacterDB } from '../model/characters'
+
+let dSchemaCharacter : iCharacter = {
+    _id: null,
+    _NombrePersonaje: null,
+    _Clase: null,
+    _Raza: null,
+    _Personalidad: null
+}
 
 let dSchemaRaza : iRaza = {
     _id: null,
@@ -249,6 +259,18 @@ class DatoRoutes {
         })
     }
 
+    private getCharacters = async (req: Request, res: Response) => {
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const query  = await CharacterDB.find({})
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
 
     misRutas(){
         this._router.get('/Razas/get', this.getRazas)
@@ -266,6 +288,8 @@ class DatoRoutes {
         this._router.post('/Spells/add', this.addSpells)
         this._router.delete('/Spells/delete', this.deleteSpells)
         this._router.get('/Spells/search/:id', this.searchSpells)
+
+        this._router.get('/Characters/get', this.getCharacters)
     } 
 } 
 const obj = new DatoRoutes()

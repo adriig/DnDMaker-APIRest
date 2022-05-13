@@ -15,6 +15,14 @@ const database_1 = require("../database/database");
 const raza_1 = require("../model/raza");
 const spells_1 = require("../model/spells");
 const usuarios_1 = require("../model/usuarios");
+const characters_1 = require("../model/characters");
+let dSchemaCharacter = {
+    _id: null,
+    _NombrePersonaje: null,
+    _Clase: null,
+    _Raza: null,
+    _Personalidad: null
+};
 let dSchemaRaza = {
     _id: null,
     _NombreRaza: null,
@@ -232,6 +240,17 @@ class DatoRoutes {
                 res.send(mensaje);
             });
         });
+        this.getCharacters = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield characters_1.CharacterDB.find({});
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
         this._router = (0, express_1.Router)();
     }
     get router() {
@@ -251,6 +270,7 @@ class DatoRoutes {
         this._router.post('/Spells/add', this.addSpells);
         this._router.delete('/Spells/delete', this.deleteSpells);
         this._router.get('/Spells/search/:id', this.searchSpells);
+        this._router.get('/Characters/get', this.getCharacters);
     }
 }
 const obj = new DatoRoutes();
