@@ -259,7 +259,7 @@ class DatoRoutes {
         })
     }
 
-   /* private getCharacters = async (req: Request, res: Response) => {
+    private getCharacters = async (req: Request, res: Response) => {
         await db.conectarBD()
         .then( async (mensaje) => {
             console.log(mensaje)
@@ -269,7 +269,7 @@ class DatoRoutes {
         .catch((mensaje) => {
             res.send(mensaje)
         })
-    }*/
+    }
 
 
     misRutas(){
@@ -289,7 +289,7 @@ class DatoRoutes {
         this._router.delete('/Spells/delete', this.deleteSpells)
         this._router.get('/Spells/search/:id', this.searchSpells)
 
-    //    this._router.get('/Characters/get', this.getCharacters)
+        this._router.get('/Characters/get', this.getCharacters)
     } 
 } 
 const obj = new DatoRoutes()

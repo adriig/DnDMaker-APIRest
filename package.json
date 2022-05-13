@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "prestart": "next build",
     "ts": "tsc -w",
     "dev": "nodemon ./build/server.js",
     "start": "node ./build/server.js"
