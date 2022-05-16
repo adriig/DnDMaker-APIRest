@@ -251,6 +251,18 @@ class DatoRoutes {
                 res.send(mensaje);
             });
         });
+        this.searchCharacter = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const valor = req.params.id;
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield characters_1.CharacterDB.findOne({ _id: valor });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
         this._router = (0, express_1.Router)();
     }
     get router() {
@@ -271,6 +283,7 @@ class DatoRoutes {
         this._router.delete('/Spells/delete', this.deleteSpells);
         this._router.get('/Spells/search/:id', this.searchSpells);
         this._router.get('/Characters/get', this.getCharacters);
+        this._router.get('/Characters/search/:id', this.searchCharacter);
     }
 }
 const obj = new DatoRoutes();

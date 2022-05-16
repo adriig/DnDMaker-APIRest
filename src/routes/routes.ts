@@ -271,6 +271,19 @@ class DatoRoutes {
         })
     }
 
+    private searchCharacter = async (req: Request, res: Response) => {
+        const valor = req.params.id
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const query  = await CharacterDB.findOne({_id: valor})
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
 
     misRutas(){
         this._router.get('/Razas/get', this.getRazas)
@@ -290,6 +303,7 @@ class DatoRoutes {
         this._router.get('/Spells/search/:id', this.searchSpells)
 
         this._router.get('/Characters/get', this.getCharacters)
+        this._router.get('/Characters/search/:id', this.searchCharacter)
     } 
 } 
 const obj = new DatoRoutes()
