@@ -10,9 +10,16 @@ import { iCharacter, CharacterDB } from '../model/characters'
 let dSchemaCharacter : iCharacter = {
     _id: null,
     _NombrePersonaje: null,
-    _Clase: null,
+    _Alineacion: null,
+    _Lore: null,
+    _Personalidad: null,
+    _IdOwner: null,
     _Raza: null,
-    _Personalidad: null
+    _Clase: null,
+    _Hechizos: null,
+    _Estadisticas: null,
+    _Habilidades: null,
+
 }
 
 let dSchemaRaza : iRaza = {
@@ -271,6 +278,20 @@ class DatoRoutes {
         })
     }
 
+    private getmyCharacters = async (req: Request, res: Response) => {
+        const valor = req.params.idOwner
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const query  = await CharacterDB.find({_IdOwner: valor})
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
+
     private searchCharacter = async (req: Request, res: Response) => {
         const valor = req.params.id
         await db.conectarBD()
@@ -303,6 +324,7 @@ class DatoRoutes {
         this._router.get('/Spells/search/:id', this.searchSpells)
 
         this._router.get('/Characters/get', this.getCharacters)
+        this._router.get('/Characters/getmy', this.getmyCharacters)
         this._router.get('/Characters/search/:id', this.searchCharacter)
     } 
 } 

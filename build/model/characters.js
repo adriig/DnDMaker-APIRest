@@ -13,7 +13,13 @@ const charactersSchema = new mongoose_1.Schema({
     _Alineacion: {
         type: String
     },
+    _Lore: {
+        type: String
+    },
     _Personalidad: {
+        type: String
+    },
+    _IdOwner: {
         type: String
     },
     _Raza: {

@@ -19,9 +19,15 @@ const characters_1 = require("../model/characters");
 let dSchemaCharacter = {
     _id: null,
     _NombrePersonaje: null,
-    _Clase: null,
+    _Alineacion: null,
+    _Lore: null,
+    _Personalidad: null,
+    _IdOwner: null,
     _Raza: null,
-    _Personalidad: null
+    _Clase: null,
+    _Hechizos: null,
+    _Estadisticas: null,
+    _Habilidades: null,
 };
 let dSchemaRaza = {
     _id: null,
@@ -251,6 +257,18 @@ class DatoRoutes {
                 res.send(mensaje);
             });
         });
+        this.getmyCharacters = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const valor = req.params.idOwner;
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield characters_1.CharacterDB.find({ _IdOwner: valor });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
         this.searchCharacter = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const valor = req.params.id;
             yield database_1.db.conectarBD()
@@ -283,6 +301,7 @@ class DatoRoutes {
         this._router.delete('/Spells/delete', this.deleteSpells);
         this._router.get('/Spells/search/:id', this.searchSpells);
         this._router.get('/Characters/get', this.getCharacters);
+        this._router.get('/Characters/getmy', this.getmyCharacters);
         this._router.get('/Characters/search/:id', this.searchCharacter);
     }
 }
