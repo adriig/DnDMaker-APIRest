@@ -301,7 +301,7 @@ class DatoRoutes {
         this._router.delete('/Spells/delete', this.deleteSpells);
         this._router.get('/Spells/search/:id', this.searchSpells);
         this._router.get('/Characters/get', this.getCharacters);
-        this._router.get('/Characters/getmy', this.getmyCharacters);
+        this._router.get('/Characters/getmy/:id', this.getmyCharacters);
         this._router.get('/Characters/search/:id', this.searchCharacter);
     }
 }
