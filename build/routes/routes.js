@@ -282,24 +282,24 @@ class DatoRoutes {
             });
         });
         this.addCharacter = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const { Id, Nombre, Alineacion, Lore, Personalidad, IdOwner, Raza, Clase, Hechizos, Estadisticas, Habilidad } = req.body;
+            const { _id, _Alineacion, _Clase, _Estadisticas, _Personalidad, _IdOwner, _Raza, _Lore, _NombrePersonaje, _Hechizos, _Habilidad } = req.body;
             yield database_1.db.conectarBD()
                 .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
                 dSchemaCharacter = {
-                    _id: Id,
-                    _NombrePersonaje: Nombre,
-                    _Alineacion: Alineacion,
-                    _Lore: Lore,
-                    _Personalidad: Personalidad,
-                    _IdOwner: IdOwner,
-                    _Raza: Raza,
-                    _Clase: Clase,
-                    _Hechizos: Hechizos,
-                    _Estadisticas: Estadisticas,
-                    _Habilidades: Habilidad,
+                    _id: _id,
+                    _NombrePersonaje: _NombrePersonaje,
+                    _Alineacion: _Alineacion,
+                    _Lore: _Lore,
+                    _Personalidad: _Personalidad,
+                    _IdOwner: _IdOwner,
+                    _Raza: _Raza,
+                    _Clase: _Clase,
+                    _Hechizos: _Hechizos,
+                    _Estadisticas: _Estadisticas,
+                    _Habilidades: _Habilidad,
                 };
                 console.log(dSchemaCharacter);
-                const oSchema = new spells_1.SpellDB(dSchemaCharacter);
+                const oSchema = new characters_1.CharacterDB(dSchemaCharacter);
                 yield oSchema.save();
             })).catch((mensaje) => {
                 res.send(mensaje);
