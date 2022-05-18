@@ -305,6 +305,31 @@ class DatoRoutes {
         })
     }
 
+    private addCharacter = async (req: Request, res: Response) => {
+        const {Id, Nombre, Alineacion, Lore, Personalidad, IdOwner, Raza, Clase, Hechizos, Estadisticas, Habilidad} = req.body
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            dSchemaCharacter = {
+                _id: Id,
+                _NombrePersonaje: Nombre,
+                _Alineacion: Alineacion,
+                _Lore: Lore,
+                _Personalidad: Personalidad,
+                _IdOwner: IdOwner,
+                _Raza: Raza,
+                _Clase: Clase,
+                _Hechizos: Hechizos,
+                _Estadisticas: Estadisticas,
+                _Habilidades: Habilidad,
+          }
+          console.log(dSchemaCharacter)
+          const oSchema = new SpellDB(dSchemaCharacter)
+          await oSchema.save()
+        }).catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
 
     misRutas(){
         this._router.get('/Razas/get', this.getRazas)
@@ -326,6 +351,7 @@ class DatoRoutes {
         this._router.get('/Characters/get', this.getCharacters)
         this._router.get('/Characters/getmy/:id', this.getmyCharacters)
         this._router.get('/Characters/search/:id', this.searchCharacter)
+        this._router.post('/Characters/add', this.addCharacter)
     } 
 } 
 const obj = new DatoRoutes()

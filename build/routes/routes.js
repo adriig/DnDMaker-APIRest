@@ -281,6 +281,30 @@ class DatoRoutes {
                 res.send(mensaje);
             });
         });
+        this.addCharacter = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const { Id, Nombre, Alineacion, Lore, Personalidad, IdOwner, Raza, Clase, Hechizos, Estadisticas, Habilidad } = req.body;
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                dSchemaCharacter = {
+                    _id: Id,
+                    _NombrePersonaje: Nombre,
+                    _Alineacion: Alineacion,
+                    _Lore: Lore,
+                    _Personalidad: Personalidad,
+                    _IdOwner: IdOwner,
+                    _Raza: Raza,
+                    _Clase: Clase,
+                    _Hechizos: Hechizos,
+                    _Estadisticas: Estadisticas,
+                    _Habilidades: Habilidad,
+                };
+                console.log(dSchemaCharacter);
+                const oSchema = new spells_1.SpellDB(dSchemaCharacter);
+                yield oSchema.save();
+            })).catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
         this._router = (0, express_1.Router)();
     }
     get router() {
@@ -303,6 +327,7 @@ class DatoRoutes {
         this._router.get('/Characters/get', this.getCharacters);
         this._router.get('/Characters/getmy/:id', this.getmyCharacters);
         this._router.get('/Characters/search/:id', this.searchCharacter);
+        this._router.post('/Characters/add', this.addCharacter);
     }
 }
 const obj = new DatoRoutes();
