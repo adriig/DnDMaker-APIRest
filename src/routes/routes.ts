@@ -6,6 +6,17 @@ import { iHechizo, SpellDB } from '../model/spells'
 import { iUsers, UsersDB } from '../model/usuarios'
 import { Personaje } from '../classes/personaje/personaje'
 import { iCharacter, CharacterDB } from '../model/characters'
+import { iClass, ClassDB} from '../model/clase'
+
+let dSchemaClass: iClass = {
+    _id:  null, // para acceder en la subclase
+    _Nombre:  null,
+    _Habilidades: null,
+    _Descripcion: null,
+    _PG: null,
+    _Salvacion: null,
+    _IdOwner: null
+}
 
 let dSchemaCharacter : iCharacter = {
     _id: null,
@@ -279,10 +290,9 @@ class DatoRoutes {
     }
 
     private getmyCharacters = async (req: Request, res: Response) => {
-        const valor = req.params.idOwner
+        const valor = req.params.idOwner        
         await db.conectarBD()
         .then( async (mensaje) => {
-            console.log(mensaje)
             const query  = await CharacterDB.find({_IdOwner: valor})
             res.json(query)
         })
@@ -330,6 +340,89 @@ class DatoRoutes {
         })
     }
 
+    private deleteCharacter = async (req: Request, res: Response) => {
+        const valor = req.params.id
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const query  = await CharacterDB.findOneAndDelete({_id: valor})
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
+    private getClass = async (req: Request, res: Response) => {
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const query  = await ClassDB.find({})
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
+    private addClass = async (req: Request, res: Response) => {
+        const {_id, _Nombre, _Habilidades, _Descripcion, _PG, _Salvacion, _IdOwner} = req.body
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            dSchemaClass = {
+                _id: _id,
+                _Nombre: _Nombre, 
+                _Habilidades: _Habilidades,
+                _Descripcion: _Descripcion,
+                _PG: _PG,
+                _Salvacion: _Salvacion,
+                _IdOwner: _IdOwner
+          }
+          console.log(dSchemaClass)
+          const oSchema = new ClassDB(dSchemaClass)
+          await oSchema.save()
+        }).catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
+    private searchClass = async (req: Request, res: Response) => {
+        const valor = req.params.id
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const query  = await ClassDB.findOne({_id: valor})
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
+    private deleteClass = async (req: Request, res: Response) => {
+        const valor = req.params.id
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const query  = await ClassDB.findOneAndDelete({_id: valor})
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
+    private getmyClasses = async (req: Request, res: Response) => {
+        const valor = req.params.idOwner        
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            const query  = await ClassDB.find({_IdOwner: valor})
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
 
     misRutas(){
         this._router.get('/Razas/get', this.getRazas)
@@ -349,9 +442,16 @@ class DatoRoutes {
         this._router.get('/Spells/search/:id', this.searchSpells)
 
         this._router.get('/Characters/get', this.getCharacters)
-        this._router.get('/Characters/getmy/:id', this.getmyCharacters)
+        this._router.get('/Characters/getmy/:idOwner', this.getmyCharacters)
         this._router.get('/Characters/search/:id', this.searchCharacter)
         this._router.post('/Characters/add', this.addCharacter)
+        this._router.delete('/Characters/delete/:id', this.deleteCharacter)
+
+        this._router.get('/Classes/get', this.getClass)
+        this._router.post('/Classes/add', this.addClass)
+        this._router.post('/Classes/search/:id', this.searchClass)
+        this._router.delete('/Classes/delete/:id', this.deleteClass)
+        this._router.get('/Classes/getmy/:idOwner', this.getmyClasses)
     } 
 } 
 const obj = new DatoRoutes()

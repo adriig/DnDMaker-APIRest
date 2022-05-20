@@ -16,6 +16,16 @@ const raza_1 = require("../model/raza");
 const spells_1 = require("../model/spells");
 const usuarios_1 = require("../model/usuarios");
 const characters_1 = require("../model/characters");
+const clase_1 = require("../model/clase");
+let dSchemaClass = {
+    _id: null,
+    _Nombre: null,
+    _Habilidades: null,
+    _Descripcion: null,
+    _PG: null,
+    _Salvacion: null,
+    _IdOwner: null
+};
 let dSchemaCharacter = {
     _id: null,
     _NombrePersonaje: null,
@@ -261,7 +271,6 @@ class DatoRoutes {
             const valor = req.params.idOwner;
             yield database_1.db.conectarBD()
                 .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
-                console.log(mensaje);
                 const query = yield characters_1.CharacterDB.find({ _IdOwner: valor });
                 res.json(query);
             }))
@@ -305,6 +314,84 @@ class DatoRoutes {
                 res.send(mensaje);
             });
         });
+        this.deleteCharacter = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const valor = req.params.id;
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield characters_1.CharacterDB.findOneAndDelete({ _id: valor });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
+        this.getClass = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield clase_1.ClassDB.find({});
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
+        this.addClass = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const { _id, _Nombre, _Habilidades, _Descripcion, _PG, _Salvacion, _IdOwner } = req.body;
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                dSchemaClass = {
+                    _id: _id,
+                    _Nombre: _Nombre,
+                    _Habilidades: _Habilidades,
+                    _Descripcion: _Descripcion,
+                    _PG: _PG,
+                    _Salvacion: _Salvacion,
+                    _IdOwner: _IdOwner
+                };
+                console.log(dSchemaClass);
+                const oSchema = new clase_1.ClassDB(dSchemaClass);
+                yield oSchema.save();
+            })).catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
+        this.searchClass = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const valor = req.params.id;
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield clase_1.ClassDB.findOne({ _id: valor });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
+        this.deleteClass = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const valor = req.params.id;
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield clase_1.ClassDB.findOneAndDelete({ _id: valor });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
+        this.getmyClasses = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const valor = req.params.idOwner;
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                const query = yield clase_1.ClassDB.find({ _IdOwner: valor });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
         this._router = (0, express_1.Router)();
     }
     get router() {
@@ -325,9 +412,15 @@ class DatoRoutes {
         this._router.delete('/Spells/delete', this.deleteSpells);
         this._router.get('/Spells/search/:id', this.searchSpells);
         this._router.get('/Characters/get', this.getCharacters);
-        this._router.get('/Characters/getmy/:id', this.getmyCharacters);
+        this._router.get('/Characters/getmy/:idOwner', this.getmyCharacters);
         this._router.get('/Characters/search/:id', this.searchCharacter);
         this._router.post('/Characters/add', this.addCharacter);
+        this._router.delete('/Characters/delete/:id', this.deleteCharacter);
+        this._router.get('/Classes/get', this.getClass);
+        this._router.post('/Classes/add', this.addClass);
+        this._router.post('/Classes/search/:id', this.searchClass);
+        this._router.delete('/Classes/delete/:id', this.deleteClass);
+        this._router.get('/Classes/getmy/:idOwner', this.getmyClasses);
     }
 }
 const obj = new DatoRoutes();
