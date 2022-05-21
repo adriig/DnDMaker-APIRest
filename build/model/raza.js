@@ -27,6 +27,9 @@ const razasSchema = new mongoose_1.Schema({
     },
     _OrigenSubRaza: {
         type: String
+    },
+    _IdOwner: {
+        type: String
     }
 });
 // La colección de la BD (Plural siempre)

@@ -40,6 +40,7 @@ let dSchemaRaza : iRaza = {
     _Habilidades: null,
     _Origen: null,
     _Nombres: null,
+    _IdOwner: null
 }
 
 let dSchemaSubRaza : iSubraza = {
@@ -50,7 +51,8 @@ let dSchemaSubRaza : iSubraza = {
     _Origen: null,
     _Nombres: null,
     _RazaDependiente: null,
-    _OrigenSubRaza: null
+    _OrigenSubRaza: null,
+    _IdOwner: null
 }
 
 let dSchemaUser : iUsers = {
@@ -123,17 +125,30 @@ class DatoRoutes {
         })
     }
 
+    private getmyRaces = async (req: Request, res: Response) => {
+        const valor = req.params.idOwner        
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            const query  = await RazaDB.find({_IdOwner: valor})
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
     private addRaza = async (req: Request, res: Response) => {
-        const {Id, NombreRaza, Multiplicadores, Habilidades, Origen, Nombres} = req.body
+        const {_id, _NombreRaza, _Multiplicadores, _Habilidades, _Origen, _Nombres, _IdOwner} = req.body
         await db.conectarBD()
         .then( async (mensaje) => {
             dSchemaRaza = {
-                _id: Id,
-                _NombreRaza: NombreRaza, 
-                _Multiplicadores: Multiplicadores,
-                _Habilidades: Habilidades,
-                _Origen: Origen,
-                _Nombres: Nombres,
+                _id: _id,
+                _NombreRaza: _NombreRaza, 
+                _Multiplicadores: _Multiplicadores,
+                _Habilidades: _Habilidades,
+                _Origen: _Origen,
+                _Nombres: _Nombres,
+                _IdOwner: _IdOwner
           }
           console.log(req.body)
           const oSchema = new RazaDB(dSchemaRaza)
@@ -144,18 +159,19 @@ class DatoRoutes {
     }
 
     private addSubRaza = async (req: Request, res: Response) => {
-        const {Id, NombreRaza, Multiplicadores, Habilidades, Origen, Nombres, RazaDependiente, OrigenSubRaza} = req.body
+        const {_id, _NombreRaza, _Multiplicadores, _Habilidades, _Origen, _Nombres, _RazaDependiente, _OrigenSubRaza, _IdOwner} = req.body
         await db.conectarBD()
         .then( async (mensaje) => {
             dSchemaSubRaza = {
-                _id: Id,
-                _NombreRaza: NombreRaza, 
-                _Multiplicadores: Multiplicadores,
-                _Habilidades: Habilidades,
-                _Origen: Origen,
-                _Nombres: Nombres,
-                _RazaDependiente: RazaDependiente,
-                _OrigenSubRaza: OrigenSubRaza
+                _id: _id,
+                _NombreRaza: _NombreRaza, 
+                _Multiplicadores: _Multiplicadores,
+                _Habilidades: _Habilidades,
+                _Origen: _Origen,
+                _Nombres: _Nombres,
+                _RazaDependiente: _RazaDependiente,
+                _OrigenSubRaza: _OrigenSubRaza,
+                _IdOwner: _IdOwner
           }
           const oSchema = new RazaDB(dSchemaSubRaza)
           await oSchema.save()
@@ -430,6 +446,7 @@ class DatoRoutes {
         this._router.post('/Razas/add', this.addRaza)
         this._router.get('/Razas/search/:id', this.searchRaza)
         this._router.delete('/Razas/delete/:id', this.deleteRaza)
+        this._router.get('/Razas/getmy/:idOwner', this.getmyRaces)
 
         this._router.get('/Users/get', this.getUsers)
         this._router.post('/Users/add', this.addUser)

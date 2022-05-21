@@ -27,6 +27,9 @@ const razasSchema = new Schema({
     },
     _OrigenSubRaza: {
         type: String
+    },
+    _IdOwner: {
+        type: String
     }
 })
 
@@ -37,6 +40,7 @@ export type iRaza = {
     _Habilidades: Array<Habilidades> | null,
     _Origen: string | null,
     _Nombres: Array<String> | null,
+    _IdOwner: string | null,
 }
 
 export type iSubraza = {
@@ -47,7 +51,8 @@ export type iSubraza = {
     _Origen: string | null,
     _Nombres: Array<String> | null,
     _RazaDependiente: string | null,
-    _OrigenSubRaza: string | null
+    _OrigenSubRaza: string | null,
+    _IdOwner: string | null,
 }
 
 

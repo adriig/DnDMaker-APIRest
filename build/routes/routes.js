@@ -46,6 +46,7 @@ let dSchemaRaza = {
     _Habilidades: null,
     _Origen: null,
     _Nombres: null,
+    _IdOwner: null
 };
 let dSchemaSubRaza = {
     _id: null,
@@ -55,7 +56,8 @@ let dSchemaSubRaza = {
     _Origen: null,
     _Nombres: null,
     _RazaDependiente: null,
-    _OrigenSubRaza: null
+    _OrigenSubRaza: null,
+    _IdOwner: null
 };
 let dSchemaUser = {
     _id: null,
@@ -112,17 +114,29 @@ class DatoRoutes {
                 res.send(mensaje);
             });
         });
+        this.getmyRaces = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const valor = req.params.idOwner;
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                const query = yield raza_1.RazaDB.find({ _IdOwner: valor });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
         this.addRaza = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const { Id, NombreRaza, Multiplicadores, Habilidades, Origen, Nombres } = req.body;
+            const { _id, _NombreRaza, _Multiplicadores, _Habilidades, _Origen, _Nombres, _IdOwner } = req.body;
             yield database_1.db.conectarBD()
                 .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
                 dSchemaRaza = {
-                    _id: Id,
-                    _NombreRaza: NombreRaza,
-                    _Multiplicadores: Multiplicadores,
-                    _Habilidades: Habilidades,
-                    _Origen: Origen,
-                    _Nombres: Nombres,
+                    _id: _id,
+                    _NombreRaza: _NombreRaza,
+                    _Multiplicadores: _Multiplicadores,
+                    _Habilidades: _Habilidades,
+                    _Origen: _Origen,
+                    _Nombres: _Nombres,
+                    _IdOwner: _IdOwner
                 };
                 console.log(req.body);
                 const oSchema = new raza_1.RazaDB(dSchemaRaza);
@@ -132,18 +146,19 @@ class DatoRoutes {
             });
         });
         this.addSubRaza = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const { Id, NombreRaza, Multiplicadores, Habilidades, Origen, Nombres, RazaDependiente, OrigenSubRaza } = req.body;
+            const { _id, _NombreRaza, _Multiplicadores, _Habilidades, _Origen, _Nombres, _RazaDependiente, _OrigenSubRaza, _IdOwner } = req.body;
             yield database_1.db.conectarBD()
                 .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
                 dSchemaSubRaza = {
-                    _id: Id,
-                    _NombreRaza: NombreRaza,
-                    _Multiplicadores: Multiplicadores,
-                    _Habilidades: Habilidades,
-                    _Origen: Origen,
-                    _Nombres: Nombres,
-                    _RazaDependiente: RazaDependiente,
-                    _OrigenSubRaza: OrigenSubRaza
+                    _id: _id,
+                    _NombreRaza: _NombreRaza,
+                    _Multiplicadores: _Multiplicadores,
+                    _Habilidades: _Habilidades,
+                    _Origen: _Origen,
+                    _Nombres: _Nombres,
+                    _RazaDependiente: _RazaDependiente,
+                    _OrigenSubRaza: _OrigenSubRaza,
+                    _IdOwner: _IdOwner
                 };
                 const oSchema = new raza_1.RazaDB(dSchemaSubRaza);
                 yield oSchema.save();
@@ -403,6 +418,7 @@ class DatoRoutes {
         this._router.post('/Razas/add', this.addRaza);
         this._router.get('/Razas/search/:id', this.searchRaza);
         this._router.delete('/Razas/delete/:id', this.deleteRaza);
+        this._router.get('/Razas/getmy/:idOwner', this.getmyRaces);
         this._router.get('/Users/get', this.getUsers);
         this._router.post('/Users/add', this.addUser);
         this._router.delete('/Users/delete', this.deleteUser);
