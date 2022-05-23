@@ -24,6 +24,9 @@ const classSchema = new mongoose_1.Schema({
     },
     _IdOwner: {
         type: String
+    },
+    _Type: {
+        type: String
     }
 });
 // La colección de la BD (Plural siempre)

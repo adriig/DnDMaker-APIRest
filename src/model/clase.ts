@@ -27,6 +27,10 @@ const classSchema = new Schema({
 
     _IdOwner: {
         type: String
+    },
+
+    _Type: {
+        type: String
     }
 })
 
@@ -38,6 +42,7 @@ export type iClass = {
     _PG: number | null,
     _Salvacion: string | null,
     _IdOwner: string | null,
+    _Type: string | null,
 }
 // La colección de la BD (Plural siempre)
 export const ClassDB = model('classes', classSchema)

@@ -3,26 +3,24 @@ import { boolean } from "webidl-conversions";
 // Definimos el Schema
 const usersSchema = new Schema({
     _id: {
-        type: Number // para acceder en la subclase
+        type: String // para acceder en la subclase
     },
     _Nombre: {
         type: String
     },
-
-    _Contraseña: {
-        type: String
+    _ClasesSelected: {
+        type: Array
     },
-
-    _Tipo: {
-        type: String
+    _RacesSelected: {
+        type: Array
     }
 })
 
 export type iUsers = {
-    _id: number | null, // para acceder en la subclase
+    _id: string | null, // para acceder en la subclase
     _Nombre: string | null,
-    _Contraseña: string | null,
-    _Tipo: string | null
+    _ClasesSelected: Array<String> | null,
+    _RacesSelected: Array<String> | null
   }
 
 // La colección de la BD (Plural siempre)

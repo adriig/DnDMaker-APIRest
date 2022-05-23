@@ -15,7 +15,8 @@ let dSchemaClass: iClass = {
     _Descripcion: null,
     _PG: null,
     _Salvacion: null,
-    _IdOwner: null
+    _IdOwner: null,
+    _Type: null
 }
 
 let dSchemaCharacter : iCharacter = {
@@ -56,10 +57,10 @@ let dSchemaSubRaza : iSubraza = {
 }
 
 let dSchemaUser : iUsers = {
-    _id: null,
-    _Nombre: null, 
-    _Contraseña: null,
-    _Tipo: null,
+    _id: null, // para acceder en la subclase
+    _Nombre: null,
+    _ClasesSelected: null,
+    _RacesSelected: null
 }
 
 let dSchemaSpells : iHechizo = {
@@ -219,14 +220,14 @@ class DatoRoutes {
     }
 
     private addUser = async (req: Request, res: Response) => {
-        const {Id, Nombre, Contraseña, Tipo} = req.body
+        const {_id, _Nombre, _ClasesSelected, _RacesSelected} = req.body
         await db.conectarBD()
         .then( async (mensaje) => {
             dSchemaUser = {
-                _id: Id,
-                _Nombre: Nombre, 
-                _Contraseña: Contraseña,
-                _Tipo: Tipo,
+                _id: _id, // para acceder en la subclase
+                _Nombre: _Nombre,
+                _ClasesSelected: _ClasesSelected,
+                _RacesSelected: _RacesSelected
           }
           console.log(dSchemaUser)
           const oSchema = new UsersDB(dSchemaUser)
@@ -382,7 +383,7 @@ class DatoRoutes {
     }
 
     private addClass = async (req: Request, res: Response) => {
-        const {_id, _Nombre, _Habilidades, _Descripcion, _PG, _Salvacion, _IdOwner} = req.body
+        const {_id, _Nombre, _Habilidades, _Descripcion, _PG, _Salvacion, _IdOwner, _Type} = req.body
         await db.conectarBD()
         .then( async (mensaje) => {
             dSchemaClass = {
@@ -392,7 +393,8 @@ class DatoRoutes {
                 _Descripcion: _Descripcion,
                 _PG: _PG,
                 _Salvacion: _Salvacion,
-                _IdOwner: _IdOwner
+                _IdOwner: _IdOwner,
+                _Type: _Type
           }
           console.log(dSchemaClass)
           const oSchema = new ClassDB(dSchemaClass)

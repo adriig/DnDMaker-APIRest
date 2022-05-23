@@ -5,16 +5,16 @@ const mongoose_1 = require("mongoose");
 // Definimos el Schema
 const usersSchema = new mongoose_1.Schema({
     _id: {
-        type: Number // para acceder en la subclase
+        type: String // para acceder en la subclase
     },
     _Nombre: {
         type: String
     },
-    _Contraseña: {
-        type: String
+    _ClasesSelected: {
+        type: Array
     },
-    _Tipo: {
-        type: String
+    _RacesSelected: {
+        type: Array
     }
 });
 // La colección de la BD (Plural siempre)

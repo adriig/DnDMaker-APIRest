@@ -24,7 +24,8 @@ let dSchemaClass = {
     _Descripcion: null,
     _PG: null,
     _Salvacion: null,
-    _IdOwner: null
+    _IdOwner: null,
+    _Type: null
 };
 let dSchemaCharacter = {
     _id: null,
@@ -62,8 +63,8 @@ let dSchemaSubRaza = {
 let dSchemaUser = {
     _id: null,
     _Nombre: null,
-    _Contraseña: null,
-    _Tipo: null,
+    _ClasesSelected: null,
+    _RacesSelected: null
 };
 let dSchemaSpells = {
     _id: null,
@@ -202,14 +203,14 @@ class DatoRoutes {
             });
         });
         this.addUser = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const { Id, Nombre, Contraseña, Tipo } = req.body;
+            const { _id, _Nombre, _ClasesSelected, _RacesSelected } = req.body;
             yield database_1.db.conectarBD()
                 .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
                 dSchemaUser = {
-                    _id: Id,
-                    _Nombre: Nombre,
-                    _Contraseña: Contraseña,
-                    _Tipo: Tipo,
+                    _id: _id,
+                    _Nombre: _Nombre,
+                    _ClasesSelected: _ClasesSelected,
+                    _RacesSelected: _RacesSelected
                 };
                 console.log(dSchemaUser);
                 const oSchema = new usuarios_1.UsersDB(dSchemaUser);
@@ -353,7 +354,7 @@ class DatoRoutes {
             });
         });
         this.addClass = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const { _id, _Nombre, _Habilidades, _Descripcion, _PG, _Salvacion, _IdOwner } = req.body;
+            const { _id, _Nombre, _Habilidades, _Descripcion, _PG, _Salvacion, _IdOwner, _Type } = req.body;
             yield database_1.db.conectarBD()
                 .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
                 dSchemaClass = {
@@ -363,7 +364,8 @@ class DatoRoutes {
                     _Descripcion: _Descripcion,
                     _PG: _PG,
                     _Salvacion: _Salvacion,
-                    _IdOwner: _IdOwner
+                    _IdOwner: _IdOwner,
+                    _Type: _Type
                 };
                 console.log(dSchemaClass);
                 const oSchema = new clase_1.ClassDB(dSchemaClass);
