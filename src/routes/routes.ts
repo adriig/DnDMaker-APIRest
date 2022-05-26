@@ -225,7 +225,7 @@ class DatoRoutes {
         .then( async (mensaje) => {
             dSchemaUser = {
                 _id: _id, // para acceder en la subclase
-                _Nombre: _Nombre,
+                _Nombre: _Nombre, 
                 _ClasesSelected: _ClasesSelected,
                 _RacesSelected: _RacesSelected
           }
