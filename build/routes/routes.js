@@ -219,6 +219,19 @@ class DatoRoutes {
                 res.send(mensaje);
             });
         });
+        this.addClassToUser = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            const valor = req.params.idClass;
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield usuarios_1.UsersDB.updateOne({ _id: id }, { $push: { _ClasesSelected: valor } });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
         this.getSpells = (req, res) => __awaiter(this, void 0, void 0, function* () {
             yield database_1.db.conectarBD()
                 .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
@@ -425,6 +438,7 @@ class DatoRoutes {
         this._router.post('/Users/add', this.addUser);
         this._router.delete('/Users/delete', this.deleteUser);
         this._router.get('/Users/search/:id', this.searchUser);
+        this._router.put('Users/addClass/:id/:valuie', this.addClassToUser);
         this._router.get('/Spells/get', this.getSpells);
         this._router.post('/Spells/add', this.addSpells);
         this._router.delete('/Spells/delete', this.deleteSpells);

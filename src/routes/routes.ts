@@ -237,6 +237,20 @@ class DatoRoutes {
         })
     }
 
+    private addClassToUser = async (req: Request, res: Response) => {
+        const id = req.params.id
+        const valor = req.params.idClass
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const query  = await UsersDB.updateOne({_id: id}, {$push: {_ClasesSelected: valor}})
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
     private getSpells = async (req: Request, res: Response) => {
         await db.conectarBD()
         .then( async (mensaje) => {
@@ -454,6 +468,7 @@ class DatoRoutes {
         this._router.post('/Users/add', this.addUser)
         this._router.delete('/Users/delete', this.deleteUser)
         this._router.get('/Users/search/:id', this.searchUser)
+        this._router.put('Users/addClass/:id/:valuie', this.addClassToUser)
 
         this._router.get('/Spells/get', this.getSpells)
         this._router.post('/Spells/add', this.addSpells)
