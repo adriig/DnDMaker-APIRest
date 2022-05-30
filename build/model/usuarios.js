@@ -10,7 +10,7 @@ const usersSchema = new mongoose_1.Schema({
     _Nombre: {
         type: String
     },
-    _ClasesSelected: {
+    _ClassesSelected: {
         type: Array
     },
     _RacesSelected: {

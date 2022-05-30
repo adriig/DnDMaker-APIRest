@@ -8,7 +8,7 @@ const usersSchema = new Schema({
     _Nombre: {
         type: String
     },
-    _ClasesSelected: {
+    _ClassesSelected: {
         type: Array
     },
     _RacesSelected: {

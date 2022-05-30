@@ -17,6 +17,7 @@ const spells_1 = require("../model/spells");
 const usuarios_1 = require("../model/usuarios");
 const characters_1 = require("../model/characters");
 const clase_1 = require("../model/clase");
+const user_1 = require("../classes/users/user");
 let dSchemaClass = {
     _id: null,
     _Nombre: null,
@@ -221,12 +222,28 @@ class DatoRoutes {
         });
         this.addClassToUser = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id;
-            const valor = req.params.idClass;
+            const idValue = req.params.valueId;
             yield database_1.db.conectarBD()
                 .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
-                console.log(mensaje);
-                const query = yield usuarios_1.UsersDB.updateOne({ _id: id }, { $push: { _ClasesSelected: valor } });
+                const query = yield usuarios_1.UsersDB.findOneAndUpdate({ _id: id }, { $push: { _ClassesSelected: idValue } });
                 res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
+        this.existClassInUser = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            const idValue = req.params.valueId;
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                const query = yield usuarios_1.UsersDB.findOne({ _id: id });
+                console.log(query);
+                const newUser = new user_1.Users(query._id, query._ClassesSelected, query._RacesSelected);
+                console.log(newUser);
+                let feedback = newUser.searchMyClass(idValue);
+                console.log(feedback);
+                return feedback;
             }))
                 .catch((mensaje) => {
                 res.send(mensaje);
@@ -438,7 +455,8 @@ class DatoRoutes {
         this._router.post('/Users/add', this.addUser);
         this._router.delete('/Users/delete', this.deleteUser);
         this._router.get('/Users/search/:id', this.searchUser);
-        this._router.put('Users/addClass/:id/:valuie', this.addClassToUser);
+        this._router.put('/Users/addClass/:id/:valueId', this.addClassToUser);
+        this._router.get('/Users/existClassInUsers/:id/:valueId', this.existClassInUser);
         this._router.get('/Spells/get', this.getSpells);
         this._router.post('/Spells/add', this.addSpells);
         this._router.delete('/Spells/delete', this.deleteSpells);

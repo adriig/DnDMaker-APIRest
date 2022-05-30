@@ -7,6 +7,7 @@ import { iUsers, UsersDB } from '../model/usuarios'
 import { Personaje } from '../classes/personaje/personaje'
 import { iCharacter, CharacterDB } from '../model/characters'
 import { iClass, ClassDB} from '../model/clase'
+import { Users } from '../classes/users/user'
 
 let dSchemaClass: iClass = {
     _id:  null, // para acceder en la subclase
@@ -239,12 +240,29 @@ class DatoRoutes {
 
     private addClassToUser = async (req: Request, res: Response) => {
         const id = req.params.id
-        const valor = req.params.idClass
+        const idValue = req.params.valueId
         await db.conectarBD()
         .then( async (mensaje) => {
-            console.log(mensaje)
-            const query  = await UsersDB.updateOne({_id: id}, {$push: {_ClasesSelected: valor}})
+            const query  = await UsersDB.findOneAndUpdate({_id: id}, {$push: {_ClassesSelected: idValue}})
             res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
+    private existClassInUser = async (req: Request, res: Response) => {
+        const id = req.params.id
+        const idValue = req.params.valueId
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            const query  = await UsersDB.findOne({_id: id})
+            console.log(query)
+            const newUser = new Users(query._id, query._ClassesSelected, query._RacesSelected)
+            console.log(newUser)
+            let feedback = newUser.searchMyClass(idValue)
+            console.log(feedback)
+            return feedback
         })
         .catch((mensaje) => {
             res.send(mensaje)
@@ -468,7 +486,8 @@ class DatoRoutes {
         this._router.post('/Users/add', this.addUser)
         this._router.delete('/Users/delete', this.deleteUser)
         this._router.get('/Users/search/:id', this.searchUser)
-        this._router.put('Users/addClass/:id/:valuie', this.addClassToUser)
+        this._router.put('/Users/addClass/:id/:valueId', this.addClassToUser)
+        this._router.get('/Users/existClassInUsers/:id/:valueId', this.existClassInUser)
 
         this._router.get('/Spells/get', this.getSpells)
         this._router.post('/Spells/add', this.addSpells)
