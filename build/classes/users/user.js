@@ -25,7 +25,6 @@ class Users {
                 feedback = true;
             }
         });
-        console.log(feedback);
         return feedback;
     }
 }

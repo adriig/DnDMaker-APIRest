@@ -257,11 +257,8 @@ class DatoRoutes {
         await db.conectarBD()
         .then( async (mensaje) => {
             const query  = await UsersDB.findOne({_id: id})
-            console.log(query)
             const newUser = new Users(query._id, query._ClassesSelected, query._RacesSelected)
-            console.log(newUser)
             let feedback = newUser.searchMyClass(idValue)
-            console.log(feedback)
             return feedback
         })
         .catch((mensaje) => {

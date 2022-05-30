@@ -238,11 +238,8 @@ class DatoRoutes {
             yield database_1.db.conectarBD()
                 .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
                 const query = yield usuarios_1.UsersDB.findOne({ _id: id });
-                console.log(query);
                 const newUser = new user_1.Users(query._id, query._ClassesSelected, query._RacesSelected);
-                console.log(newUser);
                 let feedback = newUser.searchMyClass(idValue);
-                console.log(feedback);
                 return feedback;
             }))
                 .catch((mensaje) => {
