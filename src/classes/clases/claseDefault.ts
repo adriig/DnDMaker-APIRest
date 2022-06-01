@@ -13,9 +13,8 @@ export class Clase {
     public _Type: String;
 
     public constructor(id: number, Nombre: string, Habilidades: Array<Habilidades>, PG: Array<String>, Salvacion: Array<String>, IdOwner: string, Descripcion: string, Public: Boolean, Type: String){
-        this._id=id
+        this._id=id 
         this._Nombre=Nombre;
-        this._Habilidades = Habilidades;
         this._Descripcion = Descripcion
         this._PG = PG;
         this._Salvacion = Salvacion;

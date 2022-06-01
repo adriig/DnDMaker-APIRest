@@ -18,6 +18,9 @@ const usuarios_1 = require("../model/usuarios");
 const characters_1 = require("../model/characters");
 const clase_1 = require("../model/clase");
 const user_1 = require("../classes/users/user");
+const posts_1 = require("../model/posts");
+const comments_1 = require("../classes/posts/comments");
+const posts_2 = require("../classes/posts/posts");
 let dSchemaClass = {
     _id: null,
     _Nombre: null,
@@ -74,6 +77,17 @@ let dSchemaSpells = {
     _Tipo: null,
     _Duracion: null,
     _Descripcion: null,
+};
+let dSchemaPosts = {
+    _id: null,
+    _Titulo: null,
+    _Texto: null,
+    _Likes: null,
+    _Dislikes: null,
+    _Date: null,
+    _Tipo: null,
+    _IdOwner: null,
+    _Comentarios: null
 };
 class DatoRoutes {
     constructor() {
@@ -478,6 +492,114 @@ class DatoRoutes {
                 res.send(mensaje);
             });
         });
+        this.getPosts = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield posts_1.PostsDB.find({}).sort({ _Likes: 1 });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
+        this.getmyPosts = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const valor = req.params.idOwner;
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                const query = yield posts_1.PostsDB.find({ _IdOwner: valor });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
+        this.searchPost = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const valor = req.params.id;
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield posts_1.PostsDB.findOne({ _id: valor });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
+        this.getPostPerType = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const valor = req.params.type;
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield posts_1.PostsDB.find({ _Tipo: valor });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
+        this.addPost = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const { _id, _Titulo, _Texto, _Likes, _Dislikes, _Date, _Tipo, _IdOwner, _Comentarios } = req.body;
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                dSchemaPosts = {
+                    _id: _id,
+                    _Titulo: _Titulo,
+                    _Texto: _Texto,
+                    _Likes: _Likes,
+                    _Dislikes: _Dislikes,
+                    _Date: _Date,
+                    _Tipo: _Tipo,
+                    _IdOwner: _IdOwner,
+                    _Comentarios: _Comentarios
+                };
+                console.log(dSchemaCharacter);
+                const oSchema = new posts_1.PostsDB(dSchemaPosts);
+                yield oSchema.save();
+            })).catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
+        this.deletePost = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const valor = req.params.id;
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield posts_1.PostsDB.findOneAndDelete({ _id: valor });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
+        this.addComment = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            const { _id, _Date, _IdOwner, _Texto } = req.body;
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                const comentario = new comments_1.Comments(_id, _IdOwner, _Date, _Texto);
+                const query = yield posts_1.PostsDB.findOneAndUpdate({ _id: id }, { $push: { _Comentarios: comentario } });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
+        this.reactionPost = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            const value = req.params.value;
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                const query = yield posts_1.PostsDB.findOne({ _id: id });
+                const myPost = new posts_2.Posts(query._id, query._Titulo, query._Texto, query._Likes, query._Dislikes, query._Date, query._Tipo, query._IdOwner, query._Comentarios);
+                const feedback = myPost.updateThings(Boolean(value));
+                const query2 = yield posts_1.PostsDB.findOneAndUpdate({ _id: id }, { _likelist: feedback.get("Likes"), _dislikes: feedback.get("Dislikes") });
+                res.json(query2);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
         this._router = (0, express_1.Router)();
     }
     get router() {
@@ -513,6 +635,14 @@ class DatoRoutes {
         this._router.delete('/Classes/delete/:id', this.deleteClass);
         this._router.get('/Classes/getmy/:idOwner', this.getmyClasses);
         this._router.get('/Classes/getpickeable/:idOwner/:array', this.getpickeableClasses);
+        this._router.get('/Posts/get', this.getPosts);
+        this._router.get('/Posts/getmy', this.getmyPosts);
+        this._router.get('/Posts/search/:id', this.searchPost);
+        this._router.delete('/Posts/delete/:id', this.deletePost);
+        this._router.post('/Posts/add', this.addPost);
+        this._router.get('/Posts/getpertype/:type', this.getPostPerType);
+        this._router.put('/Posts/addComment/:id', this.addComment);
+        this._router.get('/Posts/reaction/:id/:value', this.reactionPost);
     }
 }
 const obj = new DatoRoutes();

@@ -5,7 +5,6 @@ class Clase {
     constructor(id, Nombre, Habilidades, PG, Salvacion, IdOwner, Descripcion, Public, Type) {
         this._id = id;
         this._Nombre = Nombre;
-        this._Habilidades = Habilidades;
         this._Descripcion = Descripcion;
         this._PG = PG;
         this._Salvacion = Salvacion;

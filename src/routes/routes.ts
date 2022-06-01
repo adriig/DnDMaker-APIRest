@@ -8,6 +8,9 @@ import { Personaje } from '../classes/personaje/personaje'
 import { iCharacter, CharacterDB } from '../model/characters'
 import { iClass, ClassDB} from '../model/clase'
 import { Users } from '../classes/users/user'
+import { iPosts, PostsDB } from '../model/posts'
+import { Comments } from '../classes/posts/comments'
+import { Posts } from '../classes/posts/posts'
 
 let dSchemaClass: iClass = {
     _id:  null, // para acceder en la subclase
@@ -71,6 +74,18 @@ let dSchemaSpells : iHechizo = {
     _Tipo: null,
     _Duracion: null,
     _Descripcion: null,
+}
+
+let dSchemaPosts: iPosts = {
+    _id: null,
+    _Titulo: null,
+    _Texto: null,
+    _Likes: null,
+     _Dislikes: null,
+    _Date: null,
+    _Tipo: null,
+    _IdOwner: null,
+    _Comentarios: null
 }
 
 class DatoRoutes {
@@ -516,6 +531,124 @@ class DatoRoutes {
         })
     }
 
+
+    private getPosts = async (req: Request, res: Response) => {
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const query  = await PostsDB.find({}).sort({_Likes: 1})
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
+    private getmyPosts = async (req: Request, res: Response) => {
+        const valor = req.params.idOwner        
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            const query  = await PostsDB.find({_IdOwner: valor})
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
+
+    private searchPost = async (req: Request, res: Response) => {
+        const valor = req.params.id
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const query  = await PostsDB.findOne({_id: valor})
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
+    private getPostPerType = async (req: Request, res: Response) => {
+        const valor = req.params.type
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const query  = await PostsDB.find({_Tipo: valor})
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
+    private addPost = async (req: Request, res: Response) => {
+        const {_id, _Titulo, _Texto, _Likes, _Dislikes, _Date, _Tipo, _IdOwner, _Comentarios} = req.body
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            dSchemaPosts = {
+                _id: _id,
+                _Titulo: _Titulo,
+                _Texto: _Texto,
+                _Likes: _Likes,
+                _Dislikes: _Dislikes,
+                _Date: _Date,
+                _Tipo: _Tipo,
+                _IdOwner: _IdOwner,
+                _Comentarios: _Comentarios     
+          }
+          console.log(dSchemaCharacter)
+          const oSchema = new PostsDB(dSchemaPosts)
+          await oSchema.save()
+        }).catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
+    private deletePost = async (req: Request, res: Response) => {
+        const valor = req.params.id
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const query  = await PostsDB.findOneAndDelete({_id: valor})
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
+    private addComment = async (req: Request, res: Response) => {
+        const id = req.params.id
+        const {_id, _Date, _IdOwner, _Texto} = req.body
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            const comentario = new Comments (_id, _IdOwner, _Date, _Texto)
+            const query  = await PostsDB.findOneAndUpdate({_id: id}, {$push: {_Comentarios: comentario}})
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
+    private reactionPost = async (req: Request, res: Response) => {
+        const id = req.params.id
+        const value = req.params.value
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            const query  = await PostsDB.findOne({_id: id})
+            const myPost = new Posts(query._id, query._Titulo, query._Texto, query._Likes, query._Dislikes, query._Date, query._Tipo, query._IdOwner, query._Comentarios)
+            const feedback = myPost.updateThings(Boolean(value))
+            const query2 = await PostsDB.findOneAndUpdate({_id: id}, {_likelist: feedback.get("Likes"), _dislikes: feedback.get("Dislikes")})
+            res.json(query2)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
     misRutas(){
         this._router.get('/Razas/get', this.getRazas)
         this._router.post('/Razas/Sub/add', this.addSubRaza)
@@ -550,6 +683,15 @@ class DatoRoutes {
         this._router.delete('/Classes/delete/:id', this.deleteClass)
         this._router.get('/Classes/getmy/:idOwner', this.getmyClasses)
         this._router.get('/Classes/getpickeable/:idOwner/:array', this.getpickeableClasses)
+
+        this._router.get('/Posts/get', this.getPosts)
+        this._router.get('/Posts/getmy', this.getmyPosts)
+        this._router.get('/Posts/search/:id', this.searchPost)
+        this._router.delete('/Posts/delete/:id', this.deletePost)
+        this._router.post('/Posts/add', this.addPost)
+        this._router.get('/Posts/getpertype/:type', this.getPostPerType)
+        this._router.put('/Posts/addComment/:id', this.addComment)
+        this._router.get('/Posts/reaction/:id/:value', this.reactionPost)
     } 
 } 
 const obj = new DatoRoutes()
