@@ -29,6 +29,9 @@ const classSchema = new Schema({
         type: String
     },
 
+    _Public: {
+        type: Boolean
+    },
     _Type: {
         type: String
     }
@@ -42,6 +45,7 @@ export type iClass = {
     _PG: number | null,
     _Salvacion: string | null,
     _IdOwner: string | null,
+    _Public: boolean | null,
     _Type: string | null,
 }
 // La colección de la BD (Plural siempre)

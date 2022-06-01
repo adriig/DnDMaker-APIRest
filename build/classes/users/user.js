@@ -18,6 +18,14 @@ class Users {
         let nombreNuevo = item.concat('-', String(randomNum));
         return nombreNuevo;
     }
+    deleteMyClass(value) {
+        for (let i = 0; i < this._ClassesSelected.length; i++) {
+            if (this._ClassesSelected[i] == value) {
+                this._ClassesSelected.splice(i, 1);
+            }
+        }
+        return this._ClassesSelected;
+    }
     searchMyClass(value) {
         let feedback = false;
         this._ClassesSelected.forEach(element => {

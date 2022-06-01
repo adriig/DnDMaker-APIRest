@@ -25,6 +25,9 @@ const classSchema = new mongoose_1.Schema({
     _IdOwner: {
         type: String
     },
+    _Public: {
+        type: Boolean
+    },
     _Type: {
         type: String
     }

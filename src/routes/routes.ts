@@ -17,6 +17,7 @@ let dSchemaClass: iClass = {
     _PG: null,
     _Salvacion: null,
     _IdOwner: null,
+    _Public: null,
     _Type: null
 }
 
@@ -251,6 +252,23 @@ class DatoRoutes {
         })
     }
 
+    private removeClassInUser = async (req: Request, res: Response) => {
+        const id = req.params.id
+        const idValue = req.params.valueId
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            const query  = await UsersDB.findOne({_id: id})
+            const newUser = new Users(query._id, query._ClassesSelected, query._RacesSelected)
+            const feedback = newUser.deleteMyClass(idValue)
+            console.log(feedback)
+            const query2  = await UsersDB.findOneAndUpdate({_id: id}, {_ClassesSelected: feedback})
+            res.json(query2)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
     private existClassInUser = async (req: Request, res: Response) => {
         const id = req.params.id
         const idValue = req.params.valueId
@@ -259,7 +277,20 @@ class DatoRoutes {
             const query  = await UsersDB.findOne({_id: id})
             const newUser = new Users(query._id, query._ClassesSelected, query._RacesSelected)
             let feedback = newUser.searchMyClass(idValue)
-            return feedback
+            res.send(feedback)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
+    private getClassesOfUser = async (req: Request, res: Response) => {
+        const id = req.params.id
+        const idValue = req.params.valueId
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            const query  = await UsersDB.findOne({_id: id})
+            res.send(query._ClassesSelected)
         })
         .catch((mensaje) => {
             res.send(mensaje)
@@ -412,7 +443,7 @@ class DatoRoutes {
     }
 
     private addClass = async (req: Request, res: Response) => {
-        const {_id, _Nombre, _Habilidades, _Descripcion, _PG, _Salvacion, _IdOwner, _Type} = req.body
+        const {_id, _Nombre, _Habilidades, _Descripcion, _PG, _Salvacion, _IdOwner, _Public, _Type} = req.body
         await db.conectarBD()
         .then( async (mensaje) => {
             dSchemaClass = {
@@ -423,6 +454,7 @@ class DatoRoutes {
                 _PG: _PG,
                 _Salvacion: _Salvacion,
                 _IdOwner: _IdOwner,
+                _Public: _Public,
                 _Type: _Type
           }
           console.log(dSchemaClass)
@@ -471,6 +503,19 @@ class DatoRoutes {
         })
     }
 
+    private getpickeableClasses = async (req: Request, res: Response) => {
+        const valor = req.params.idOwner   
+        const value = req.params.array     
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            const query  = await ClassDB.find({$and: [{_Public: true}, {$or: [{_id: {$in: [value]}}, {_idOwner: valor}]}]})
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
     misRutas(){
         this._router.get('/Razas/get', this.getRazas)
         this._router.post('/Razas/Sub/add', this.addSubRaza)
@@ -483,8 +528,10 @@ class DatoRoutes {
         this._router.post('/Users/add', this.addUser)
         this._router.delete('/Users/delete', this.deleteUser)
         this._router.get('/Users/search/:id', this.searchUser)
+        this._router.get('/Users/getClasses/:id', this.getClassesOfUser)
         this._router.put('/Users/addClass/:id/:valueId', this.addClassToUser)
         this._router.get('/Users/existClassInUsers/:id/:valueId', this.existClassInUser)
+        this._router.get('/Users/deleteClassInUser/:id/:valueId', this.removeClassInUser)
 
         this._router.get('/Spells/get', this.getSpells)
         this._router.post('/Spells/add', this.addSpells)
@@ -502,6 +549,7 @@ class DatoRoutes {
         this._router.post('/Classes/search/:id', this.searchClass)
         this._router.delete('/Classes/delete/:id', this.deleteClass)
         this._router.get('/Classes/getmy/:idOwner', this.getmyClasses)
+        this._router.get('/Classes/getpickeable/:idOwner/:array', this.getpickeableClasses)
     } 
 } 
 const obj = new DatoRoutes()
