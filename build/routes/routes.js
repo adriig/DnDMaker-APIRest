@@ -21,6 +21,8 @@ const user_1 = require("../classes/users/user");
 const posts_1 = require("../model/posts");
 const comments_1 = require("../classes/posts/comments");
 const posts_2 = require("../classes/posts/posts");
+const gamerequest_1 = require("../model/gamerequest");
+const game_1 = require("../model/game");
 let dSchemaClass = {
     _id: null,
     _Nombre: null,
@@ -88,6 +90,20 @@ let dSchemaPosts = {
     _Tipo: null,
     _IdOwner: null,
     _Comentarios: null
+};
+let dSchemaGame = {
+    _id: null,
+    owner: null,
+    name: null,
+    maxPlayers: null,
+    createdAt: null,
+    participants: []
+};
+let dSchemaGameRequest = {
+    _id: null,
+    requester: null,
+    gameId: null,
+    createdAt: null
 };
 class DatoRoutes {
     constructor() {
@@ -483,9 +499,14 @@ class DatoRoutes {
         this.getpickeableClasses = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const valor = req.params.idOwner;
             const value = req.params.array;
+            const array = value.split(',');
             yield database_1.db.conectarBD()
                 .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
-                const query = yield clase_1.ClassDB.find({ $and: [{ _Public: true }, { $or: [{ _id: { $in: [value] } }, { _idOwner: valor }] }] });
+                // const query = await ClassDB.find({$and: [{_Public: true}, { _idOwner: array}]})
+                console.log(array);
+                const query = yield clase_1.ClassDB.find({ $and: [{ _Public: true }, { $or: [{ _id: { $in: array } }, { _idOwner: valor }] }] });
+                console.log("Uwu");
+                console.log(query);
                 res.json(query);
             }))
                 .catch((mensaje) => {
@@ -600,6 +621,111 @@ class DatoRoutes {
                 res.send(mensaje);
             });
         });
+        this.listGames = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield this.listGameFromFilter(req, res, {});
+        });
+        this.listGame = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield this.listGameFromFilter(req, res, {
+                gameId: req.params.gameId
+            });
+        });
+        this.listGamesFromOwner = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield this.listGameFromFilter(req, res, {
+                owner: req.params.owner
+            });
+        });
+        this.listGameFromFilter = (req, res, filter) => __awaiter(this, void 0, void 0, function* () {
+            yield database_1.db.conectarBD()
+                .then(() => __awaiter(this, void 0, void 0, function* () {
+                const query = yield game_1.GameDB.find(filter);
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
+        this.createGame = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const { _id, _owner, _name, _maxPlayers, _createdAt, _participants } = req.body;
+            yield database_1.db.conectarBD().then(() => __awaiter(this, void 0, void 0, function* () {
+                dSchemaGame = {
+                    _id: _id,
+                    owner: _owner,
+                    name: _name,
+                    maxPlayers: _maxPlayers,
+                    createdAt: _createdAt,
+                    participants: _participants
+                };
+                const schema = new game_1.GameDB(dSchemaGame);
+                yield schema.save();
+            })).catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
+        this.deleteGame = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const gameId = req.params.gameId;
+            yield database_1.db.conectarBD()
+                .then(() => __awaiter(this, void 0, void 0, function* () {
+                const query = yield game_1.GameDB.findOneAndDelete({ _id: gameId });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
+        this.createGameRequest = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const { _id, _requester, _gameId, _createdAt } = req.body;
+            yield database_1.db.conectarBD().then(() => __awaiter(this, void 0, void 0, function* () {
+                dSchemaGameRequest = {
+                    _id: _id,
+                    requester: _requester,
+                    gameId: _gameId,
+                    createdAt: _createdAt
+                };
+                const schema = new gamerequest_1.GameRequestDB(dSchemaGameRequest);
+                yield schema.save();
+            })).catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
+        this.deleteGameRequest = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const { gameId, ownerId } = req.params;
+            yield database_1.db.conectarBD()
+                .then(() => __awaiter(this, void 0, void 0, function* () {
+                const query = yield gamerequest_1.GameRequestDB.findOneAndDelete({
+                    gameId: gameId,
+                    requester: ownerId
+                });
+                res.json(query);
+            })).catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
+        this.getGameRequestsFromGameId = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield this.getGameRequestFromFilter(req, res, {
+                gameId: req.params.gameId
+            });
+        });
+        this.getGameRequestsFromOwner = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield this.getGameRequestFromFilter(req, res, {
+                requester: req.params.ownerId
+            });
+        });
+        this.getGameRequestsFromOwnerInGame = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield this.getGameRequestFromFilter(req, res, {
+                requester: req.params.ownerId,
+                gameId: req.params.gameId
+            });
+        });
+        this.getGameRequestFromFilter = (req, res, filter) => __awaiter(this, void 0, void 0, function* () {
+            yield database_1.db.conectarBD()
+                .then(() => __awaiter(this, void 0, void 0, function* () {
+                const query = yield gamerequest_1.GameRequestDB.find(filter);
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
         this._router = (0, express_1.Router)();
     }
     get router() {
@@ -643,6 +769,16 @@ class DatoRoutes {
         this._router.get('/Posts/getpertype/:type', this.getPostPerType);
         this._router.put('/Posts/addComment/:id', this.addComment);
         this._router.get('/Posts/reaction/:id/:value', this.reactionPost);
+        this._router.get('/games/get', this.listGames);
+        this._router.get('/games/get/:gameId', this.listGame);
+        this._router.get('/games/from/:owner', this.listGamesFromOwner);
+        this._router.post('/games/create', this.createGame);
+        this._router.delete('/games/delete/:gameId', this.deleteGame);
+        this._router.get('/games/request/from/:ownerId', this.getGameRequestsFromOwner);
+        this._router.get('/games/request/from/:ownerId/:gameId', this.getGameRequestsFromOwnerInGame);
+        this._router.get('/games/request/get/:gameId', this.getGameRequestsFromGameId);
+        this._router.post('/games/request/create', this.createGameRequest);
+        this._router.delete('/games/request/delete/:ownerId/:gameId', this.deleteGameRequest);
     }
 }
 const obj = new DatoRoutes();

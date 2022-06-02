@@ -11,6 +11,8 @@ import { Users } from '../classes/users/user'
 import { iPosts, PostsDB } from '../model/posts'
 import { Comments } from '../classes/posts/comments'
 import { Posts } from '../classes/posts/posts'
+import { GameRequestDB, iGameRequest } from '../model/gamerequest'
+import { GameDB, iGame } from '../model/game'
 
 let dSchemaClass: iClass = {
     _id:  null, // para acceder en la subclase
@@ -86,6 +88,22 @@ let dSchemaPosts: iPosts = {
     _Tipo: null,
     _IdOwner: null,
     _Comentarios: null
+}
+
+let dSchemaGame: iGame = {
+    _id: null,
+    owner: null,
+    name: null,
+    maxPlayers: null,
+    createdAt: null,
+    participants: []
+}
+
+let dSchemaGameRequest: iGameRequest = {
+    _id: null,
+    requester: null,
+    gameId: null,
+    createdAt: null
 }
 
 class DatoRoutes {
@@ -521,13 +539,18 @@ class DatoRoutes {
     private getpickeableClasses = async (req: Request, res: Response) => {
         const valor = req.params.idOwner   
         const value = req.params.array     
+        const array = value.split(',')
         await db.conectarBD()
         .then( async (mensaje) => {
-            const query  = await ClassDB.find({$and: [{_Public: true}, {$or: [{_id: {$in: [value]}}, {_idOwner: valor}]}]})
+            // const query = await ClassDB.find({$and: [{_Public: true}, { _idOwner: array}]})
+            console.log(array)
+            const query  = await ClassDB.find({$and: [{_Public: true}, {$or: [{_id: {$in: array}}, {_idOwner: valor}]}]})
+            console.log("Uwu")
+            console.log(query)
             res.json(query)
         })
         .catch((mensaje) => {
-            res.send(mensaje)
+            res.send(mensaje) 
         })
     }
 
@@ -649,6 +672,129 @@ class DatoRoutes {
         })
     }
 
+    private listGames = async (req: Request, res: Response) => {
+        await this.listGameFromFilter(req, res, {})
+    }
+
+    private listGame = async (req: Request, res: Response) => {
+        await this.listGameFromFilter(req, res, {
+            gameId: req.params.gameId
+        })
+    }
+
+    private listGamesFromOwner = async (req: Request, res: Response) => {
+        await this.listGameFromFilter(req, res, {
+            owner: req.params.owner
+        })
+    }
+
+    private listGameFromFilter = async (req: Request, res: Response, filter: {}) => {
+        await db.conectarBD()
+            .then(async () => {
+                const query = await GameDB.find(filter)
+                res.json(query)
+            })
+            .catch((mensaje) => {
+                res.send(mensaje)
+            })
+    }
+
+    private createGame = async (req: Request, res: Response) => {
+        const {
+            _id, _owner, _name,
+            _maxPlayers, _createdAt,
+            _participants
+        } = req.body
+
+        await db.conectarBD().then(async () => {
+            dSchemaGame = {
+                _id: _id,
+                owner: _owner,
+                name: _name,
+                maxPlayers: _maxPlayers,
+                createdAt: _createdAt,
+                participants: _participants
+            }
+            const schema = new GameDB(dSchemaGame)
+            await schema.save()
+        }).catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
+    private deleteGame = async (req: Request, res: Response) => {
+        const gameId = req.params.gameId
+        await db.conectarBD()
+            .then(async () => {
+                const query = await GameDB.findOneAndDelete({ _id: gameId })
+                res.json(query)
+            })
+            .catch((mensaje) => {
+                res.send(mensaje)
+            })
+    }
+
+    private createGameRequest = async (req: Request, res: Response) => {
+        const { _id, _requester, _gameId, _createdAt } = req.body
+
+        await db.conectarBD().then(async () => {
+            dSchemaGameRequest = {
+                _id: _id,
+                requester: _requester,
+                gameId: _gameId,
+                createdAt: _createdAt
+            }
+            const schema = new GameRequestDB(dSchemaGameRequest)
+            await schema.save()
+        }).catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
+    private deleteGameRequest = async (req: Request, res: Response) => {
+        const { gameId, ownerId } = req.params
+        await db.conectarBD()
+            .then(async () => {
+                const query = await GameRequestDB.findOneAndDelete({
+                    gameId: gameId,
+                    requester: ownerId
+                })
+                res.json(query)
+            }).catch((mensaje) => {
+                res.send(mensaje)
+            })
+    }
+
+    private getGameRequestsFromGameId = async (req: Request, res: Response) => {
+        await this.getGameRequestFromFilter(req, res, {
+            gameId: req.params.gameId
+        })
+    }
+
+    private getGameRequestsFromOwner = async (req: Request, res: Response) => {
+        await this.getGameRequestFromFilter(req, res, {
+            requester: req.params.ownerId
+        })
+    }
+
+    private getGameRequestsFromOwnerInGame = async (req: Request, res: Response) => {
+        await this.getGameRequestFromFilter(req, res, {
+            requester: req.params.ownerId,
+            gameId: req.params.gameId
+        })
+    }
+
+    private getGameRequestFromFilter = async (req: Request, res: Response, filter: {}) => {
+        await db.conectarBD()
+            .then(async () => {
+                const query = await GameRequestDB.find(filter)
+                res.json(query)
+            })
+            .catch((mensaje) => {
+                res.send(mensaje)
+            })
+    }
+
     misRutas(){
         this._router.get('/Razas/get', this.getRazas)
         this._router.post('/Razas/Sub/add', this.addSubRaza)
@@ -692,6 +838,18 @@ class DatoRoutes {
         this._router.get('/Posts/getpertype/:type', this.getPostPerType)
         this._router.put('/Posts/addComment/:id', this.addComment)
         this._router.get('/Posts/reaction/:id/:value', this.reactionPost)
+
+        this._router.get('/games/get', this.listGames)
+        this._router.get('/games/get/:gameId', this.listGame)
+        this._router.get('/games/from/:owner', this.listGamesFromOwner)
+        this._router.post('/games/create', this.createGame)
+        this._router.delete('/games/delete/:gameId', this.deleteGame)
+
+        this._router.get('/games/request/from/:ownerId', this.getGameRequestsFromOwner)
+        this._router.get('/games/request/from/:ownerId/:gameId', this.getGameRequestsFromOwnerInGame)
+        this._router.get('/games/request/get/:gameId', this.getGameRequestsFromGameId)
+        this._router.post('/games/request/create', this.createGameRequest)
+        this._router.delete('/games/request/delete/:ownerId/:gameId', this.deleteGameRequest)
     } 
 } 
 const obj = new DatoRoutes()
