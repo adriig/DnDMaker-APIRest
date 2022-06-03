@@ -11,7 +11,7 @@ import { Users } from '../classes/users/user'
 import { iPosts, PostsDB } from '../model/posts'
 import { Comments } from '../classes/posts/comments'
 import { Posts } from '../classes/posts/posts'
-import { GameRequestDB, iGameRequest } from '../model/gamerequest'
+import { GameRequestDB, iGameRequest } from '../model/gameRequest'
 import { GameDB, iGame } from '../model/game'
 
 let dSchemaClass: iClass = {
@@ -442,7 +442,6 @@ class DatoRoutes {
                 _Estadisticas: _Estadisticas,
                 _Habilidades: _Habilidad,
           }
-          console.log(dSchemaCharacter)
           const oSchema = new CharacterDB(dSchemaCharacter)
           await oSchema.save()
         }).catch((mensaje) => {

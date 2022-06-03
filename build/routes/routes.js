@@ -21,7 +21,7 @@ const user_1 = require("../classes/users/user");
 const posts_1 = require("../model/posts");
 const comments_1 = require("../classes/posts/comments");
 const posts_2 = require("../classes/posts/posts");
-const gamerequest_1 = require("../model/gamerequest");
+const gameRequest_1 = require("../model/gameRequest");
 const game_1 = require("../model/game");
 let dSchemaClass = {
     _id: null,
@@ -409,7 +409,6 @@ class DatoRoutes {
                     _Estadisticas: _Estadisticas,
                     _Habilidades: _Habilidad,
                 };
-                console.log(dSchemaCharacter);
                 const oSchema = new characters_1.CharacterDB(dSchemaCharacter);
                 yield oSchema.save();
             })).catch((mensaje) => {
@@ -681,7 +680,7 @@ class DatoRoutes {
                     gameId: _gameId,
                     createdAt: _createdAt
                 };
-                const schema = new gamerequest_1.GameRequestDB(dSchemaGameRequest);
+                const schema = new gameRequest_1.GameRequestDB(dSchemaGameRequest);
                 yield schema.save();
             })).catch((mensaje) => {
                 res.send(mensaje);
@@ -691,7 +690,7 @@ class DatoRoutes {
             const { gameId, ownerId } = req.params;
             yield database_1.db.conectarBD()
                 .then(() => __awaiter(this, void 0, void 0, function* () {
-                const query = yield gamerequest_1.GameRequestDB.findOneAndDelete({
+                const query = yield gameRequest_1.GameRequestDB.findOneAndDelete({
                     gameId: gameId,
                     requester: ownerId
                 });
@@ -719,7 +718,7 @@ class DatoRoutes {
         this.getGameRequestFromFilter = (req, res, filter) => __awaiter(this, void 0, void 0, function* () {
             yield database_1.db.conectarBD()
                 .then(() => __awaiter(this, void 0, void 0, function* () {
-                const query = yield gamerequest_1.GameRequestDB.find(filter);
+                const query = yield gameRequest_1.GameRequestDB.find(filter);
                 res.json(query);
             }))
                 .catch((mensaje) => {

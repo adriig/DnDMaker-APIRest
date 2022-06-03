@@ -4,7 +4,7 @@ import { Comments } from "../classes/posts/comments";
 // Definimos el Schema
 const postsSchema = new Schema({
     _id: {
-        type: Number
+        type: String
     },
     
     _Titulo: {
@@ -39,7 +39,7 @@ const postsSchema = new Schema({
 })
 
 export type iPosts = {
-    _id: number | null;
+    _id: string | null;
     _Titulo: string | null;
     _Texto: string | null;
     _Likes: number | null;

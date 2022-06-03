@@ -5,7 +5,7 @@ const mongoose_1 = require("mongoose");
 // Definimos el Schema
 const postsSchema = new mongoose_1.Schema({
     _id: {
-        type: Number
+        type: String
     },
     _Titulo: {
         type: String
