@@ -13,17 +13,35 @@ class Posts {
         this._IdOwner = IdOwner;
         this._Comentarios = Comentarios;
     }
-    updateThings(value) {
+    removeDislike(value) {
+        for (let i = 0; i < this._Dislikes.length; i++) {
+            if (this._Dislikes[i] == value) {
+                this._Dislikes.splice(i, 1);
+            }
+        }
+        return this._Dislikes;
+    }
+    removeLike(value) {
+        for (let i = 0; i < this._Likes.length; i++) {
+            if (this._Likes[i] == value) {
+                this._Likes.splice(i, 1);
+            }
+        }
+        return this._Likes;
+    }
+    existReaction(value) {
         let interactions = new Map();
-        if (value == false) {
-            this._Dislikes++;
-            interactions.set("Dislikes", this._Dislikes);
+        for (let i = 0; i < this._Likes.length; i++) {
+            if (this._Likes[i] == value) {
+                return 1;
+            }
         }
-        else {
-            this._Likes++;
-            interactions.set("Likes", this._Likes);
+        for (let i = 0; i < this._Dislikes.length; i++) {
+            if (this._Dislikes[i] == value) {
+                return -1;
+            }
         }
-        return interactions;
+        return 0;
     }
 }
 exports.Posts = Posts;

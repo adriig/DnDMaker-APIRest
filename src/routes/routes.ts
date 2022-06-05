@@ -83,7 +83,7 @@ let dSchemaPosts: iPosts = {
     _Titulo: null,
     _Texto: null,
     _Likes: null,
-     _Dislikes: null,
+    _Dislikes: null,
     _Date: null,
     _Tipo: null,
     _IdOwner: null,
@@ -558,7 +558,7 @@ class DatoRoutes {
         await db.conectarBD()
         .then( async (mensaje) => {
             console.log(mensaje)
-            const query  = await PostsDB.find({}).sort({_Likes: 1})
+            const query  = await PostsDB.aggregate([{$project: {"_id":1, "_Titulo":1, "_Date":1, "_Texto":1, "_Likes":1, "_Dislikes":1, "_Tipo":1, "_IdOwner":1, "_Comentarios":1, LikesNumber: {$size: "$_Likes"}}}, {$sort: {LikesNumber: -1}}])
             res.json(query)
         })
         .catch((mensaje) => {
@@ -570,7 +570,8 @@ class DatoRoutes {
         const valor = req.params.idOwner        
         await db.conectarBD()
         .then( async (mensaje) => {
-            const query  = await PostsDB.find({_IdOwner: valor})
+            const query  = await PostsDB.aggregate([{$match: {_IdOwner: valor}}, {$project: {"_id":1, "_Titulo":1, "_Date":1, "_Texto":1, "_Likes":1, "_Dislikes":1, "_Tipo":1, "_IdOwner":1, "_Comentarios":1, LikesNumber: {$size: "$_Likes"}}}, {$sort: {LikesNumber: -1}}])
+            console.log(query)
             res.json(query)
         })
         .catch((mensaje) => {
@@ -596,7 +597,6 @@ class DatoRoutes {
         const valor = req.params.type
         await db.conectarBD()
         .then( async (mensaje) => {
-            console.log(mensaje)
             const query  = await PostsDB.find({_Tipo: valor})
             res.json(query)
         })
@@ -655,15 +655,61 @@ class DatoRoutes {
         })
     }
 
-    private reactionPost = async (req: Request, res: Response) => {
+
+    private likePost = async (req: Request, res: Response) => {
         const id = req.params.id
-        const value = req.params.value
+        const idvalue = req.params.idvalue
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(id)
+            const query  = await PostsDB.findOneAndUpdate({_id: id}, {$push: {_Likes: idvalue}})
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
+    private dislikePost = async (req: Request, res: Response) => {
+        const id = req.params.id
+        const idvalue = req.params.idvalue
+        console.log("DATOS: "+id+idvalue)
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            const query  = await PostsDB.findOneAndUpdate({_id: id}, {$push: {_Dislikes: idvalue}})
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
+
+    private unDislikePost = async (req: Request, res: Response) => {
+        const id = req.params.id
+        const idvalue = req.params.idvalue
         await db.conectarBD()
         .then( async (mensaje) => {
             const query  = await PostsDB.findOne({_id: id})
             const myPost = new Posts(query._id, query._Titulo, query._Texto, query._Likes, query._Dislikes, query._Date, query._Tipo, query._IdOwner, query._Comentarios)
-            const feedback = myPost.updateThings(Boolean(value))
-            const query2 = await PostsDB.findOneAndUpdate({_id: id}, {_likelist: feedback.get("Likes"), _dislikes: feedback.get("Dislikes")})
+            const feedback = myPost.removeDislike(idvalue)
+            const query2 = await PostsDB.findOneAndUpdate({_id: id}, {_Dislikes: feedback})
+            res.json(query2)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+    }
+
+    private unLikePost = async (req: Request, res: Response) => {
+        const id = req.params.id
+        const idvalue = req.params.idvalue
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            const query  = await PostsDB.findOne({_id: id})
+            const myPost = new Posts(query._id, query._Titulo, query._Texto, query._Likes, query._Dislikes, query._Date, query._Tipo, query._IdOwner, query._Comentarios)
+            const feedback = myPost.removeLike(idvalue)
+            const query2 = await PostsDB.findOneAndUpdate({_id: id}, {_Likes: feedback})
             res.json(query2)
         })
         .catch((mensaje) => {
@@ -830,13 +876,16 @@ class DatoRoutes {
         this._router.get('/Classes/getpickeable/:idOwner/:array', this.getpickeableClasses)
 
         this._router.get('/Posts/get', this.getPosts)
-        this._router.get('/Posts/getmy', this.getmyPosts)
+        this._router.get('/Posts/getmy/:idOwner', this.getmyPosts)
         this._router.get('/Posts/search/:id', this.searchPost)
         this._router.delete('/Posts/delete/:id', this.deletePost)
         this._router.post('/Posts/add', this.addPost)
         this._router.get('/Posts/getpertype/:type', this.getPostPerType)
         this._router.put('/Posts/addComment/:id', this.addComment)
-        this._router.get('/Posts/reaction/:id/:value', this.reactionPost)
+        this._router.get('/Posts/like/:id/:idvalue', this.likePost)
+        this._router.get('/Posts/dislike/:id/:idvalue', this.dislikePost)
+        this._router.get('/Posts/unlike/:id/:idvalue', this.unLikePost)
+        this._router.get('/Posts/undislike/:id/:idvalue', this.unDislikePost)
 
         this._router.get('/games/get', this.listGames)
         this._router.get('/games/get/:gameId', this.listGame)

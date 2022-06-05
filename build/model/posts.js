@@ -14,10 +14,10 @@ const postsSchema = new mongoose_1.Schema({
         type: String
     },
     _Likes: {
-        type: Number
+        type: Array
     },
     _Dislikes: {
-        type: Number
+        type: Array
     },
     _Date: {
         type: Date

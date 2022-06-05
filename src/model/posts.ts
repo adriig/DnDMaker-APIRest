@@ -15,11 +15,11 @@ const postsSchema = new Schema({
         type: String
     },
     _Likes: { 
-        type: Number
+        type: Array
     },
     
     _Dislikes: {
-        type: Number
+        type: Array
     },
     
     _Date: { 
@@ -42,8 +42,8 @@ export type iPosts = {
     _id: string | null;
     _Titulo: string | null;
     _Texto: string | null;
-    _Likes: number | null;
-     _Dislikes: number | null;
+    _Likes: Array<string> | null;
+     _Dislikes: Array<string> | null;
     _Date: Date | null;
     _Tipo: string | null;
     _IdOwner: string | null;
