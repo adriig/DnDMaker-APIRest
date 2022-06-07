@@ -23,6 +23,12 @@ const comments_1 = require("../classes/posts/comments");
 const posts_2 = require("../classes/posts/posts");
 const gameRequest_1 = require("../model/gameRequest");
 const game_1 = require("../model/game");
+const gameInvite_1 = require("../model/gameInvite");
+// import { iPicture, PicturesDB } from '../model/images'
+// let dSchemaImage: iPicture = {
+//     _id: null,
+//     imagePath: null
+// }
 let dSchemaClass = {
     _id: null,
     _Nombre: null,
@@ -46,6 +52,7 @@ let dSchemaCharacter = {
     _Hechizos: null,
     _Estadisticas: null,
     _Habilidades: null,
+    _ImagePath: null,
 };
 let dSchemaRaza = {
     _id: null,
@@ -105,6 +112,13 @@ let dSchemaGameRequest = {
     gameId: null,
     createdAt: null
 };
+let dSchemaGameInvite = {
+    _id: null,
+    gameId: null,
+    host: null,
+    invited: null,
+    createdAt: null
+};
 class DatoRoutes {
     constructor() {
         /**
@@ -158,6 +172,21 @@ class DatoRoutes {
                 res.send(mensaje);
             });
         });
+        this.getpickeableRaces = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const valor = req.params.idOwner;
+            const value = req.params.array;
+            const array = value.split(',');
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                // const query = await ClassDB.find({$and: [{_Public: true}, { _idOwner: array}]})
+                console.log(mensaje);
+                const query = yield raza_1.RazaDB.find({ $and: [{ _Public: true }, { $or: [{ _id: { $in: array } }, { _idOwner: valor }] }] });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
         this.addRaza = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const { _id, _NombreRaza, _Multiplicadores, _Habilidades, _Origen, _Nombres, _IdOwner } = req.body;
             yield database_1.db.conectarBD()
@@ -171,7 +200,6 @@ class DatoRoutes {
                     _Nombres: _Nombres,
                     _IdOwner: _IdOwner
                 };
-                console.log(req.body);
                 const oSchema = new raza_1.RazaDB(dSchemaRaza);
                 yield oSchema.save();
             })).catch((mensaje) => {
@@ -238,13 +266,13 @@ class DatoRoutes {
             const { _id, _Nombre, _ClasesSelected, _RacesSelected } = req.body;
             yield database_1.db.conectarBD()
                 .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
                 dSchemaUser = {
                     _id: _id,
                     _Nombre: _Nombre,
                     _ClasesSelected: _ClasesSelected,
                     _RacesSelected: _RacesSelected
                 };
-                console.log(dSchemaUser);
                 const oSchema = new usuarios_1.UsersDB(dSchemaUser);
                 yield oSchema.save();
             })).catch((mensaje) => {
@@ -268,10 +296,10 @@ class DatoRoutes {
             const idValue = req.params.valueId;
             yield database_1.db.conectarBD()
                 .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
                 const query = yield usuarios_1.UsersDB.findOne({ _id: id });
                 const newUser = new user_1.Users(query._id, query._ClassesSelected, query._RacesSelected);
                 const feedback = newUser.deleteMyClass(idValue);
-                console.log(feedback);
                 const query2 = yield usuarios_1.UsersDB.findOneAndUpdate({ _id: id }, { _ClassesSelected: feedback });
                 res.json(query2);
             }))
@@ -284,6 +312,7 @@ class DatoRoutes {
             const idValue = req.params.valueId;
             yield database_1.db.conectarBD()
                 .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
                 const query = yield usuarios_1.UsersDB.findOne({ _id: id });
                 const newUser = new user_1.Users(query._id, query._ClassesSelected, query._RacesSelected);
                 let feedback = newUser.searchMyClass(idValue);
@@ -298,8 +327,66 @@ class DatoRoutes {
             const idValue = req.params.valueId;
             yield database_1.db.conectarBD()
                 .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
                 const query = yield usuarios_1.UsersDB.findOne({ _id: id });
                 res.send(query._ClassesSelected);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
+        this.addRaceToUser = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            const idValue = req.params.valueId;
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield usuarios_1.UsersDB.findOneAndUpdate({ _id: id }, { $push: { _RacesSelected: idValue } });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
+        this.removeRaceInUser = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            const idValue = req.params.valueId;
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield usuarios_1.UsersDB.findOne({ _id: id });
+                const newUser = new user_1.Users(query._id, query._ClassesSelected, query._RacesSelected);
+                const feedback = newUser.deleteMyRace(idValue);
+                const query2 = yield usuarios_1.UsersDB.findOneAndUpdate({ _id: id }, { _RacesSelected: feedback });
+                res.json(query2);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
+        this.existRaceInUser = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            const idValue = req.params.valueId;
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield usuarios_1.UsersDB.findOne({ _id: id });
+                const newUser = new user_1.Users(query._id, query._ClassesSelected, query._RacesSelected);
+                let feedback = newUser.searchMyRace(idValue);
+                res.send(feedback);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
+        this.getRaceOfUser = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            const idValue = req.params.valueId;
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield usuarios_1.UsersDB.findOne({ _id: id });
+                res.send(query._RacesSelected);
             }))
                 .catch((mensaje) => {
                 res.send(mensaje);
@@ -344,6 +431,7 @@ class DatoRoutes {
             const { Id, Nombre, Tipo, Duracion, Descripcion } = req.body;
             yield database_1.db.conectarBD()
                 .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
                 dSchemaSpells = {
                     _id: Id,
                     _Nombre: Nombre,
@@ -373,6 +461,7 @@ class DatoRoutes {
             const valor = req.params.idOwner;
             yield database_1.db.conectarBD()
                 .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
                 const query = yield characters_1.CharacterDB.find({ _IdOwner: valor });
                 res.json(query);
             }))
@@ -393,9 +482,10 @@ class DatoRoutes {
             });
         });
         this.addCharacter = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const { _id, _Alineacion, _Clase, _Estadisticas, _Personalidad, _IdOwner, _Raza, _Lore, _NombrePersonaje, _Hechizos, _Habilidad } = req.body;
+            const { _id, _Alineacion, _Clase, _Estadisticas, _Personalidad, _IdOwner, _Raza, _Lore, _NombrePersonaje, _Hechizos, _Habilidad, _ImagePath } = req.body;
             yield database_1.db.conectarBD()
                 .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
                 dSchemaCharacter = {
                     _id: _id,
                     _NombrePersonaje: _NombrePersonaje,
@@ -408,6 +498,7 @@ class DatoRoutes {
                     _Hechizos: _Hechizos,
                     _Estadisticas: _Estadisticas,
                     _Habilidades: _Habilidad,
+                    _ImagePath: _ImagePath
                 };
                 const oSchema = new characters_1.CharacterDB(dSchemaCharacter);
                 yield oSchema.save();
@@ -442,6 +533,7 @@ class DatoRoutes {
             const { _id, _Nombre, _Habilidades, _Descripcion, _PG, _Salvacion, _IdOwner, _Public, _Type } = req.body;
             yield database_1.db.conectarBD()
                 .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
                 dSchemaClass = {
                     _id: _id,
                     _Nombre: _Nombre,
@@ -488,6 +580,7 @@ class DatoRoutes {
             const valor = req.params.idOwner;
             yield database_1.db.conectarBD()
                 .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
                 const query = yield clase_1.ClassDB.find({ _IdOwner: valor });
                 res.json(query);
             }))
@@ -504,8 +597,6 @@ class DatoRoutes {
                 // const query = await ClassDB.find({$and: [{_Public: true}, { _idOwner: array}]})
                 console.log(array);
                 const query = yield clase_1.ClassDB.find({ $and: [{ _Public: true }, { $or: [{ _id: { $in: array } }, { _idOwner: valor }] }] });
-                console.log("Uwu");
-                console.log(query);
                 res.json(query);
             }))
                 .catch((mensaje) => {
@@ -666,7 +757,7 @@ class DatoRoutes {
         });
         this.listGame = (req, res) => __awaiter(this, void 0, void 0, function* () {
             yield this.listGameFromFilter(req, res, {
-                gameId: req.params.gameId
+                _id: req.params.gameId
             });
         });
         this.listGamesFromOwner = (req, res) => __awaiter(this, void 0, void 0, function* () {
@@ -685,15 +776,15 @@ class DatoRoutes {
             });
         });
         this.createGame = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const { _id, _owner, _name, _maxPlayers, _createdAt, _participants } = req.body;
+            const { _id, owner, name, maxPlayers, createdAt, participants } = req.body;
             yield database_1.db.conectarBD().then(() => __awaiter(this, void 0, void 0, function* () {
                 dSchemaGame = {
                     _id: _id,
-                    owner: _owner,
-                    name: _name,
-                    maxPlayers: _maxPlayers,
-                    createdAt: _createdAt,
-                    participants: _participants
+                    owner: owner,
+                    name: name,
+                    maxPlayers: maxPlayers,
+                    createdAt: createdAt,
+                    participants: participants
                 };
                 const schema = new game_1.GameDB(dSchemaGame);
                 yield schema.save();
@@ -729,12 +820,25 @@ class DatoRoutes {
         });
         this.deleteGameRequest = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const { gameId, ownerId } = req.params;
+            yield this.deleteGameRequestByFilter(req, res, {
+                gameId: gameId,
+                requester: ownerId
+            });
+        });
+        this.deleteGameRequestsByOwner = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield this.deleteGameRequestByFilter(req, res, {
+                requester: req.params.ownerId
+            });
+        });
+        this.deleteGameRequestsByGame = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield this.deleteGameRequestByFilter(req, res, {
+                gameId: req.params.gameId
+            });
+        });
+        this.deleteGameRequestByFilter = (req, res, filter) => __awaiter(this, void 0, void 0, function* () {
             yield database_1.db.conectarBD()
                 .then(() => __awaiter(this, void 0, void 0, function* () {
-                const query = yield gameRequest_1.GameRequestDB.findOneAndDelete({
-                    gameId: gameId,
-                    requester: ownerId
-                });
+                const query = yield gameRequest_1.GameRequestDB.findOneAndDelete(filter);
                 res.json(query);
             })).catch((mensaje) => {
                 res.send(mensaje);
@@ -766,11 +870,137 @@ class DatoRoutes {
                 res.send(mensaje);
             });
         });
+        this.getInvitesFromInvited = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield this.getInvitesFromFilter(req, res, {
+                invited: req.params.invited
+            });
+        });
+        this.getInvitesFromHost = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield this.getInvitesFromFilter(req, res, {
+                host: req.params.host
+            });
+        });
+        this.getInvitesFromGameId = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield this.getInvitesFromFilter(req, res, {
+                gameId: req.params.gameId
+            });
+        });
+        this.getInvitesFromFilter = (req, res, filter) => __awaiter(this, void 0, void 0, function* () {
+            yield this.executeMongoQuery(req, res, () => __awaiter(this, void 0, void 0, function* () {
+                const query = yield gameInvite_1.GameInviteDB.find(filter);
+                res.json(query);
+            }));
+        });
+        this.createInvite = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const { _id, gameId, host, invited, createdAt } = req.body;
+            yield this.executeMongoQuery(req, res, () => __awaiter(this, void 0, void 0, function* () {
+                dSchemaGameInvite = {
+                    _id: _id,
+                    gameId: gameId,
+                    host: host,
+                    invited: invited,
+                    createdAt: createdAt
+                };
+                yield new gameInvite_1.GameInviteDB(dSchemaGameInvite).save();
+            }));
+        });
+        this.deleteParticipant = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const { gameId, playerId } = req.body;
+            yield this.executeMongoQuery(req, res, () => __awaiter(this, void 0, void 0, function* () {
+                const query = yield game_1.GameDB.findOneAndUpdate({
+                    _id: gameId
+                }, {
+                    $pull: {
+                        participants: playerId
+                    }
+                });
+                res.json(query);
+            }));
+        });
+        this.addParticipant = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const { gameId, playerId } = req.body;
+            yield this.executeMongoQuery(req, res, () => __awaiter(this, void 0, void 0, function* () {
+                const query = yield game_1.GameDB.findOneAndUpdate({
+                    _id: gameId
+                }, {
+                    $push: {
+                        participants: playerId
+                    }
+                });
+                res.json(query);
+            }));
+        });
+        this.acceptInvite = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const { gameId, invited } = req.body;
+            yield this.executeMongoQuery(req, res, () => __awaiter(this, void 0, void 0, function* () {
+                const query = yield game_1.GameDB.findOneAndUpdate({
+                    _id: gameId
+                }, {
+                    $push: {
+                        participants: invited
+                    }
+                });
+                res.json(query);
+            }));
+        });
+        this.deleteInvite = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield this.executeMongoQuery(req, res, () => __awaiter(this, void 0, void 0, function* () {
+                const query = yield gameInvite_1.GameInviteDB.findOneAndDelete({
+                    _id: req.params.inviteId
+                });
+                res.json(query);
+            }));
+        });
+        this.deleteInviteFromGame = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield this.executeMongoQuery(req, res, () => __awaiter(this, void 0, void 0, function* () {
+                const query = yield gameInvite_1.GameInviteDB.deleteMany({
+                    gameId: req.params.gameId
+                });
+                res.json(query);
+            }));
+        });
+        this.executeMongoQuery = (req, res, callback) => __awaiter(this, void 0, void 0, function* () {
+            yield database_1.db.conectarBD()
+                .then(() => __awaiter(this, void 0, void 0, function* () {
+                callback();
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
         this._router = (0, express_1.Router)();
     }
     get router() {
         return this._router;
     }
+    // private searchPicture = async (req: Request, res: Response) => {
+    //     const valor = req.params.id
+    //     await db.conectarBD()
+    //     .then( async (mensaje) => {
+    //         console.log(mensaje)
+    //         const query  = await PicturesDB.findOne({_id: valor})
+    //         res.json(query)
+    //     })
+    //     .catch((mensaje) => {
+    //         res.send(mensaje)
+    //     })
+    // }
+    // private addPicture = async (req: Request, res: Response) => {
+    //     console.log(req.body)
+    //     const {_id, imagePath} = req.body
+    //     await db.conectarBD()
+    //     .then( async (mensaje) => {
+    //         dSchemaImage = {
+    //             _id: _id, // para acceder en la subclase
+    //             imagePath: imagePath
+    //       }
+    //       const oSchema = new PicturesDB(dSchemaImage)
+    //       console.log(dSchemaImage)
+    //       await oSchema.save()
+    //     }).catch((mensaje) => {
+    //         res.send(mensaje)
+    //     })
+    // }
     misRutas() {
         this._router.get('/Razas/get', this.getRazas);
         this._router.post('/Razas/Sub/add', this.addSubRaza);
@@ -778,6 +1008,7 @@ class DatoRoutes {
         this._router.get('/Razas/search/:id', this.searchRaza);
         this._router.delete('/Razas/delete/:id', this.deleteRaza);
         this._router.get('/Razas/getmy/:idOwner', this.getmyRaces);
+        this._router.get('/Razas/getpickeable/:idOwner/:array', this.getpickeableClasses);
         this._router.get('/Users/get', this.getUsers);
         this._router.post('/Users/add', this.addUser);
         this._router.delete('/Users/delete', this.deleteUser);
@@ -786,6 +1017,10 @@ class DatoRoutes {
         this._router.put('/Users/addClass/:id/:valueId', this.addClassToUser);
         this._router.get('/Users/existClassInUsers/:id/:valueId', this.existClassInUser);
         this._router.get('/Users/deleteClassInUser/:id/:valueId', this.removeClassInUser);
+        this._router.get('/Users/getRaces/:id', this.getRaceOfUser);
+        this._router.put('/Users/addRaces/:id/:valueId', this.addRaceToUser);
+        this._router.get('/Users/existRaceInUser/:id/:valueId', this.existRaceInUser);
+        this._router.get('/Users/deleteRaceInUser/:id/:valueId', this.removeRaceInUser);
         this._router.get('/Spells/get', this.getSpells);
         this._router.post('/Spells/add', this.addSpells);
         this._router.delete('/Spells/delete', this.deleteSpells);
@@ -817,11 +1052,22 @@ class DatoRoutes {
         this._router.get('/games/from/:owner', this.listGamesFromOwner);
         this._router.post('/games/create', this.createGame);
         this._router.delete('/games/delete/:gameId', this.deleteGame);
+        this._router.put('/games/participant/delete', this.deleteParticipant);
+        this._router.put('/games/participant/add', this.addParticipant);
         this._router.get('/games/request/from/:ownerId', this.getGameRequestsFromOwner);
         this._router.get('/games/request/from/:ownerId/:gameId', this.getGameRequestsFromOwnerInGame);
         this._router.get('/games/request/get/:gameId', this.getGameRequestsFromGameId);
         this._router.post('/games/request/create', this.createGameRequest);
         this._router.delete('/games/request/delete/:ownerId/:gameId', this.deleteGameRequest);
+        this._router.get('/games/invite/get/invited/:invited', this.getInvitesFromInvited);
+        this._router.get('/games/invite/get/host/:host', this.getInvitesFromHost);
+        this._router.get('/games/invite/get/game/:gameId', this.getInvitesFromGameId);
+        this._router.post('/games/invite/create', this.createInvite);
+        this._router.put('/games/invite/accept', this.acceptInvite);
+        this._router.delete('/games/invite/delete/:inviteId', this.deleteInvite);
+        this._router.delete('/games/invite/delete/game/:gameId', this.deleteInviteFromGame);
+        // this._router.get('/pictures/get/:owner', this.searchPicture)
+        // this._router.post('/pictures/post/', this.addPicture)
     }
 }
 const obj = new DatoRoutes();

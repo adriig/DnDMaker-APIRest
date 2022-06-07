@@ -40,4 +40,23 @@ export class Users {
         });
         return feedback
     }
+
+    deleteMyRace(value: string) {
+        for(let i=0; i<this._RacesSelected.length; i++) {
+            if(this._RacesSelected[i]==value) {
+                this._RacesSelected.splice(i,1)
+            }
+        }
+        return this._RacesSelected
+    }
+
+    searchMyRace(value: string) {
+        let feedback=false
+        this._RacesSelected.forEach(element => {
+            if(element==value) {
+                feedback=true
+            }
+        });
+        return feedback
+    }
   }

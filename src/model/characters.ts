@@ -3,7 +3,7 @@ import { boolean } from "webidl-conversions";
 // Definimos el Schema
 const charactersSchema = new Schema({
     _id: {
-        type: Number // para acceder en la subclase
+        type: String // para acceder en la subclase
     },
     _NombrePersonaje: {
         type: String
@@ -44,10 +44,14 @@ const charactersSchema = new Schema({
     _Habilidades: {
         type: Number
     },
+
+    _ImagePath: {
+        type: String
+    }
 })
 
 export type iCharacter = {
-    _id: number | null, // para acceder en la subclase
+    _id: string | null, // para acceder en la subclase
     _NombrePersonaje: string | null,
     _Personalidad: string | null,
     _IdOwner: string | null,
@@ -58,6 +62,7 @@ export type iCharacter = {
     _Estadisticas: string | null,
     _Habilidades: number | null,
     _Clase: string | null,
+    _ImagePath: string | null
 }
 // La colección de la BD (Plural siempre)
 export const CharacterDB = model('characters', charactersSchema)

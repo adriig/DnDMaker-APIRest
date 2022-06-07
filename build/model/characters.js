@@ -5,7 +5,7 @@ const mongoose_1 = require("mongoose");
 // Definimos el Schema
 const charactersSchema = new mongoose_1.Schema({
     _id: {
-        type: Number // para acceder en la subclase
+        type: String // para acceder en la subclase
     },
     _NombrePersonaje: {
         type: String
@@ -37,6 +37,9 @@ const charactersSchema = new mongoose_1.Schema({
     _Habilidades: {
         type: Number
     },
+    _ImagePath: {
+        type: String
+    }
 });
 // La colección de la BD (Plural siempre)
 exports.CharacterDB = (0, mongoose_1.model)('characters', charactersSchema);
