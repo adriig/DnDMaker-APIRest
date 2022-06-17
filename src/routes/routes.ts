@@ -657,7 +657,12 @@ class DatoRoutes {
         await db.conectarBD()
         .then( async (mensaje) => {
             console.log(mensaje)
-            const query  = await PostsDB.aggregate([{$project: {"_id":1, "_Titulo":1, "_Date":1, "_Texto":1, "_Likes":1, "_Dislikes":1, "_Tipo":1, "_IdOwner":1, "_Comentarios":1, LikesNumber: {$size: "$_Likes"}}}, {$sort: {LikesNumber: -1}}])
+            const query  = await PostsDB.aggregate([
+                { $project: {"_id":1, "_Titulo":1, "_Date":1, "_Texto":1, "_Likes":1, 
+                    "_Dislikes":1, "_Tipo":1, "_IdOwner":1, "_Comentarios":1, 
+                    LikesNumber: {$size: "$_Likes"}}
+                }, 
+                {$sort: {LikesNumber: -1}}])
             res.json(query)
         })
         .catch((mensaje) => {
